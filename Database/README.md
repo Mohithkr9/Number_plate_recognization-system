@@ -42,9 +42,9 @@ To direct your application to your specific database:
    -
 
 ## ⚙️ Step 4: Add Credentials to Your Project
-1.Open the repository code in your editor.
-2.Locate the configuration file (or open script.js / auth.js).
-3.Insert your Personal Access Token and Base ID into your configuration variables:
+1. Open the repository code in your editor.
+2. Locate the configuration file (or open script.js / auth.js).
+3. Insert your Personal Access Token and Base ID into your configuration variables:
 
 ```bash
 // Database Configuration
@@ -55,6 +55,6 @@ const AIRTABLE_API_URL = `[https://api.airtable.com/v0/$](https://api.airtable.c
 -
 
 ## 🚀 Step 5: Test the Integration
-1.Open index.html or login.html in your web browser.
-2.Attempt to register a user or view the parking slot status dashboard.
-3.Check the developer console (F12 -> Console) to verify successful database fetching and response codes (200 OK).
+1. Open index.html or login.html in your web browser.
+2. Attempt to register a user or view the parking slot status dashboard.
+3. Check the developer console (F12 -> Console) to verify successful database fetching and response codes (200 OK).
