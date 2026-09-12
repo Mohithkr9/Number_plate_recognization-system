@@ -62,7 +62,7 @@ smart-parking/
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/Abaychandrasurya/smart-parking.git
+   git clone repo.git
    cd smart-parking
    ```
 
