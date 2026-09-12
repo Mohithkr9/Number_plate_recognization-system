@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <h1>User Profile</h1>
+    <div>
+      <button onclick="window.location.href='dashboard.html'">Dashboard</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="auth-container">
+    <h2>Profile Details</h2>
+    <input id="profileName" type="text" placeholder="Full name" />
+    <input id="profileEmail" type="email" placeholder="Email" disabled />
+    <input id="profilePhone" type="text" placeholder="Phone number" />
+    <input id="profileVehicleModel" type="text" placeholder="Vehicle model" />
+    <input id="profileVehicleNumber" type="text" placeholder="Vehicle number" />
+    <button onclick="updateProfile()">Save Profile</button>
+  </div>
+
+  <script type="module" src="auth.js"></script>
+  <script>
+    function initProfilePage() {
+      if (!localStorage.getItem("currentUser")) {
+        window.location.href = "login.html";
+        return;
+      }
+      if (typeof window.loadProfile === 'function') {
+        window.loadProfile();
+      } else {
+        window.addEventListener('load', () => {
+          if (typeof window.loadProfile === 'function') {
+            window.loadProfile();
+          }
+        });
+      }
+    }
+    initProfilePage();
+  </script>
+</body>
+</html>
