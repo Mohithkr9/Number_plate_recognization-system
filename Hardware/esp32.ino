@@ -1,193 +1,459 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 
-// WiFi
-#define WIFI_SSID "-----------WIFI"
-#define WIFI_PASSWORD "-----------PASSWORD"
+// =====================================================
+// 1. WIFI
+// =====================================================
 
-// Airtable
-#define AIRTABLE_API_KEY "YOUR_AIRTABLE_API_KEY"
-#define AIRTABLE_BASE_ID "YOUR_AIRTABLE_BASE_ID"
-#define AIRTABLE_TABLE_NAME "Parking"
+const char* ssid = "AIET";
+const char* password = "nandu1234";
 
-// Ultrasonic pins
-int trigPins[4] = {5, 17, 16, 4};
-int echoPins[4] = {18, 19, 21, 22};
+// =====================================================
+// 2. AIRTABLE
+// =====================================================
 
-// LED pins
-int greenLED[4] = {13, 14, 26, 33};
-int redLED[4]   = {12, 27, 25, 32};
+const char* AIRTABLE_TOKEN = "patonNHFlI2tk3iRS.c1d7c5f15942e5717c1d3fd3d7c13213c4a762e4dd57dd655e44cba3130581bb";
+const char* BASE_ID = "appWhAZEQegXTWIjR";
+const char* TABLE_NAME = "ParkingSlots";
 
-String recordId = ""; // Will be fetched in setup
+// =====================================================
+// 3. ULTRASONIC SENSOR PINS
+// =====================================================
 
-float getDistance(int trigPin, int echoPin) {
+const int trigPins[4] = {
+  5,   // S1
+  17,  // S2
+  16,  // S3
+  4    // S4
+};
+
+const int echoPins[4] = {
+  18,  // S1
+  19,  // S2
+  21,  // S3
+  22   // S4
+};
+
+// =====================================================
+// 4. LED PINS
+// =====================================================
+
+const int greenLED[4] = {
+  13,  // S1
+  14,  // S2
+  26,  // S3
+  33   // S4
+};
+
+const int redLED[4] = {
+  12,  // S1
+  27,  // S2
+  25,  // S3
+  32   // S4
+};
+
+// =====================================================
+// 5. EXACT AIRTABLE RECORD IDs
+// CITY CENTER MALL
+// =====================================================
+
+String recordIDs[4] = {
+  "reca4sLmlvo9LW90S",   // S1 -> Slot 1
+  "recTFuR3dEt1rOfbw",   // S2 -> Slot 2
+  "recPcybu3iKGJsXZA",   // S3 -> Slot 3
+  "rec0RFDmnaRJCZbRy"    // S4 -> Slot 4
+};
+
+// =====================================================
+// 6. SENSOR STATE
+// =====================================================
+
+// false = AVAILABLE
+// true  = OCCUPIED
+
+bool previousOccupied[4] = {
+  false,
+  false,
+  false,
+  false
+};
+
+bool firstReading = true;
+
+// =====================================================
+// 7. READ DISTANCE
+// =====================================================
+
+float readDistance(int trigPin, int echoPin) {
+
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
 
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
+
   digitalWrite(trigPin, LOW);
 
   long duration = pulseIn(echoPin, HIGH, 30000);
-  return duration * 0.034 / 2;
+
+  if (duration == 0) {
+    return 999.0;
+  }
+
+  float distance = duration * 0.0343 / 2.0;
+
+  return distance;
 }
 
-void setup() {
-  Serial.begin(115200);
+// =====================================================
+// 8. UPDATE AIRTABLE
+// =====================================================
 
-  for (int i = 0; i < 4; i++) {
-    pinMode(trigPins[i], OUTPUT);
-    pinMode(echoPins[i], INPUT);
-    pinMode(greenLED[i], OUTPUT);
-    pinMode(redLED[i], OUTPUT);
-  }
+void updateSlot(int index, bool occupied) {
 
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
+  if (WiFi.status() != WL_CONNECTED) {
 
-  Serial.println("WiFi Connected");
+    Serial.println("WiFi disconnected!");
 
-  // Fetch the record ID
-  if (WiFi.status() == WL_CONNECTED) {
-    HTTPClient http;
-    String url = "https://api.airtable.com/v0/" + String(AIRTABLE_BASE_ID) + "/" + String(AIRTABLE_TABLE_NAME);
-    http.begin(url);
-    http.addHeader("Authorization", "Bearer " + String(AIRTABLE_API_KEY));
-
-    int httpResponseCode = http.GET();
-    if (httpResponseCode > 0) {
-      String payload = http.getString();
-      // Parse JSON to get record ID (simple parsing)
-      int idIndex = payload.indexOf("\"id\":\"") + 6;
-      int idEnd = payload.indexOf("\"", idIndex);
-      recordId = payload.substring(idIndex, idEnd);
-      Serial.println("Record ID: " + recordId);
-    } else {
-      Serial.println("Error fetching record ID");
-    }
-    http.end();
-  }
-}
-
-void loop() {
-  if (recordId == "") {
-    Serial.println("No record ID, skipping");
-    delay(5000);
     return;
   }
 
-  // Fetch current data
-  int firebaseState[4] = {1, 1, 1, 1};
-  if (WiFi.status() == WL_CONNECTED) {
-    HTTPClient http;
-    String url = "https://api.airtable.com/v0/" + String(AIRTABLE_BASE_ID) + "/" + String(AIRTABLE_TABLE_NAME) + "/" + recordId;
-    http.begin(url);
-    http.addHeader("Authorization", "Bearer " + String(AIRTABLE_API_KEY));
+  HTTPClient http;
 
-    int httpResponseCode = http.GET();
-    if (httpResponseCode > 0) {
-      String payload = http.getString();
-      // Parse JSON for slot values (simple parsing)
-      for (int i = 0; i < 4; i++) {
-        String field = "\"slot" + String(i + 1) + "\":";
-        int fieldIndex = payload.indexOf(field) + field.length();
-        if (fieldIndex > field.length()) {
-          firebaseState[i] = payload.substring(fieldIndex, payload.indexOf(",", fieldIndex)).toInt();
-        }
-      }
-    }
-    http.end();
+  String url =
+    "https://api.airtable.com/v0/" +
+    String(BASE_ID) +
+    "/" +
+    String(TABLE_NAME) +
+    "/" +
+    recordIDs[index];
+
+  http.begin(url);
+
+  http.addHeader(
+    "Authorization",
+    "Bearer " + String(AIRTABLE_TOKEN)
+  );
+
+  http.addHeader(
+    "Content-Type",
+    "application/json"
+  );
+
+  String json;
+
+  // =================================================
+  // CAR ENTERED
+  // =================================================
+
+  if (occupied) {
+
+    json =
+      "{\"fields\":{"
+      "\"statusCode\":0,"
+      "\"status\":\"OCCUPIED\""
+      "}}";
+
+    Serial.println();
+    Serial.println("======================================");
+    Serial.println("🚗 CAR DETECTED");
+    Serial.println("======================================");
+    Serial.print("Sensor : S");
+    Serial.println(index + 1);
+
+    Serial.print("Slot   : ");
+    Serial.println(index + 1);
+
+    Serial.println("Status : OCCUPIED");
+    Serial.println("Webcam will be triggered by Python.");
+    Serial.println("======================================");
   }
+
+  // =================================================
+  // CAR LEFT
+  // =================================================
+
+  else {
+
+    json =
+      "{\"fields\":{"
+      "\"statusCode\":1,"
+      "\"status\":\"AVAILABLE\","
+      "\"vehicleNumber\":\"\""
+      "}}";
+
+    Serial.println();
+    Serial.println("======================================");
+    Serial.println("🅿️ SLOT AVAILABLE");
+    Serial.println("======================================");
+    Serial.print("Sensor : S");
+    Serial.println(index + 1);
+
+    Serial.print("Slot   : ");
+    Serial.println(index + 1);
+
+    Serial.println("Status : AVAILABLE");
+    Serial.println("Vehicle number cleared.");
+    Serial.println("======================================");
+  }
+
+  int httpCode = http.PATCH(json);
+
+  Serial.print("Airtable HTTP Code: ");
+  Serial.println(httpCode);
+
+  if (httpCode > 0) {
+
+    String response = http.getString();
+
+    Serial.println("Airtable Response:");
+    Serial.println(response);
+
+  } else {
+
+    Serial.println("❌ Airtable update failed.");
+  }
+
+  http.end();
+}
+
+// =====================================================
+// 9. CHECK FOR STATUS CHANGES
+// =====================================================
+
+void processStatusChanges(bool currentOccupied[4]) {
 
   for (int i = 0; i < 4; i++) {
 
-    // -------- SENSOR CHECK --------
-    float d = getDistance(trigPins[i], echoPins[i]);
+    // Ignore first reading so the system doesn't
+    // suddenly trigger the webcam when starting.
 
-    int sensorState;
-    if (d > 2 && d < 12) {
-      sensorState = 0; // occupied
+    if (firstReading) {
+
+      previousOccupied[i] = currentOccupied[i];
+
+      continue;
+    }
+
+    // =================================================
+    // AVAILABLE -> OCCUPIED
+    // =================================================
+
+    if (!previousOccupied[i] && currentOccupied[i]) {
+
+      updateSlot(i, true);
+    }
+
+    // =================================================
+    // OCCUPIED -> AVAILABLE
+    // =================================================
+
+    if (previousOccupied[i] && !currentOccupied[i]) {
+
+      updateSlot(i, false);
+    }
+
+    previousOccupied[i] = currentOccupied[i];
+  }
+
+  firstReading = false;
+}
+
+// =====================================================
+// 10. READ ALL SENSORS
+// =====================================================
+
+void readAllSensors() {
+
+  bool currentOccupied[4];
+
+  Serial.println();
+  Serial.println("--------------------------------------");
+
+  for (int i = 0; i < 4; i++) {
+
+    float distance =
+      readDistance(
+        trigPins[i],
+        echoPins[i]
+      );
+
+    // ================================================
+    // OCCUPIED CONDITION
+    // ================================================
+    //
+    // Object between 2 cm and 12 cm
+    // = OCCUPIED
+    //
+    // Otherwise = AVAILABLE
+
+    if (distance > 2 && distance < 12) {
+
+      currentOccupied[i] = true;
+
     } else {
-      sensorState = 1; // empty
+
+      currentOccupied[i] = false;
     }
 
-    int finalState;
-
-    // -------- LOGIC PRIORITY --------
-    if (sensorState == 0) {
-      finalState = 0; // occupied overrides everything
-    }
-    else if (firebaseState[i] == 2) {
-      finalState = 2; // reserved
-    }
-    else {
-      finalState = 1; // available
-    }
-
-    // -------- LED CONTROL --------
-    if (finalState == 1) {
-      digitalWrite(greenLED[i], HIGH);
-      digitalWrite(redLED[i], LOW);
-    }
-    else if (finalState == 0) {
-      digitalWrite(greenLED[i], LOW);
-      digitalWrite(redLED[i], HIGH);
-    }
-    else if (finalState == 2) {
-      digitalWrite(greenLED[i], LOW);
-
-      // Blink RED
-      digitalWrite(redLED[i], HIGH);
-      delay(300);
-      digitalWrite(redLED[i], LOW);
-      delay(300);
-    }
-
-    Serial.print("Slot ");
+    Serial.print("S");
     Serial.print(i + 1);
-    Serial.print(" = ");
-    Serial.println(finalState);
 
-    delay(100);
-  }
+    Serial.print(" | Distance: ");
 
-  // Update Airtable with final states
-  if (WiFi.status() == WL_CONNECTED) {
-    HTTPClient http;
-    String url = "https://api.airtable.com/v0/" + String(AIRTABLE_BASE_ID) + "/" + String(AIRTABLE_TABLE_NAME) + "/" + recordId;
-    http.begin(url);
-    http.addHeader("Authorization", "Bearer " + String(AIRTABLE_API_KEY));
-    http.addHeader("Content-Type", "application/json");
+    Serial.print(distance);
 
-    String jsonPayload = "{ \"fields\": {";
-    for (int i = 0; i < 4; i++) {
-      int finalState;
-      float d = getDistance(trigPins[i], echoPins[i]);
-      int sensorState = (d > 2 && d < 12) ? 0 : 1;
-      if (sensorState == 0) {
-        finalState = 0;
-      } else if (firebaseState[i] == 2) {
-        finalState = 2;
-      } else {
-        finalState = 1;
-      }
-      jsonPayload += "\"slot" + String(i + 1) + "\": " + String(finalState);
-      if (i < 3) jsonPayload += ",";
-    }
-    jsonPayload += "} }";
+    Serial.print(" cm | ");
 
-    int httpResponseCode = http.PATCH(jsonPayload);
-    if (httpResponseCode > 0) {
-      Serial.println("Updated Airtable");
+    if (currentOccupied[i]) {
+
+      Serial.println("OCCUPIED");
+
+      digitalWrite(
+        greenLED[i],
+        LOW
+      );
+
+      digitalWrite(
+        redLED[i],
+        HIGH
+      );
+
     } else {
-      Serial.println("Error updating Airtable");
+
+      Serial.println("AVAILABLE");
+
+      digitalWrite(
+        greenLED[i],
+        HIGH
+      );
+
+      digitalWrite(
+        redLED[i],
+        LOW
+      );
     }
-    http.end();
   }
 
-  Serial.println("----------------------");
-  delay(5000); // Update every 5 seconds
+  Serial.println("--------------------------------------");
+
+  processStatusChanges(currentOccupied);
+}
+
+// =====================================================
+// 11. SETUP
+// =====================================================
+
+void setup() {
+
+  Serial.begin(115200);
+
+  delay(1000);
+
+  Serial.println();
+  Serial.println("======================================");
+  Serial.println("     SMART PARKING ESP32");
+  Serial.println("======================================");
+
+  // ===================================================
+  // SENSOR + LED PIN SETUP
+  // ===================================================
+
+  for (int i = 0; i < 4; i++) {
+
+    pinMode(
+      trigPins[i],
+      OUTPUT
+    );
+
+    pinMode(
+      echoPins[i],
+      INPUT
+    );
+
+    pinMode(
+      greenLED[i],
+      OUTPUT
+    );
+
+    pinMode(
+      redLED[i],
+      OUTPUT
+    );
+
+    digitalWrite(
+      greenLED[i],
+      HIGH
+    );
+
+    digitalWrite(
+      redLED[i],
+      LOW
+    );
+  }
+
+  // ===================================================
+  // WIFI
+  // ===================================================
+
+  Serial.println();
+  Serial.println("Connecting to WiFi...");
+
+  WiFi.begin(
+    ssid,
+    password
+  );
+
+  while (WiFi.status() != WL_CONNECTED) {
+
+    delay(500);
+
+    Serial.print(".");
+  }
+
+  Serial.println();
+
+  Serial.println("✅ WiFi Connected!");
+
+  Serial.print("IP Address: ");
+  Serial.println(WiFi.localIP());
+
+  // ===================================================
+  // SLOT MAPPING
+  // ===================================================
+
+  Serial.println();
+  Serial.println("Airtable Slot Mapping:");
+  Serial.println();
+
+  Serial.println(
+    "S1 -> CITY CENTER MALL -> Slot 1"
+  );
+
+  Serial.println(
+    "S2 -> CITY CENTER MALL -> Slot 2"
+  );
+
+  Serial.println(
+    "S3 -> CITY CENTER MALL -> Slot 3"
+  );
+
+  Serial.println(
+    "S4 -> CITY CENTER MALL -> Slot 4"
+  );
+
+  Serial.println();
+
+  Serial.println("Starting sensor monitoring...");
+}
+
+// =====================================================
+// 12. LOOP
+// =====================================================
+
+void loop() {
+
+  readAllSensors();
+
+  delay(1000);
 }

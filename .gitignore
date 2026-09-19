@@ -1,0 +1,24 @@
+@'
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Secrets
+.env
+.env.*
+secrets.js
+
+# Local/private files
+latest_plate.jpg
+latest_plate_processed.jpg
+plate_processed.jpg
+plate_capture.jpg
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+'@ | Set-Content .gitignore
