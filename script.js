@@ -1,8 +1,4 @@
-﻿
-
-
-
-// ============================================================
+﻿// ============================================================
 // SMART PARKING SYSTEM - SCRIPT.JS
 // ============================================================
 
@@ -61,6 +57,60 @@ function getLinkedLocationIds(value) {
 
 
 // ============================================================
+// VEHICLE NUMBER HELPER
+// ============================================================
+
+function getVehicleNumber(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+        return "";
+    }
+
+    if (Array.isArray(value)) {
+
+        return value
+            .map(item => {
+
+                if (
+                    typeof item === "object" &&
+                    item !== null
+                ) {
+
+                    return (
+                        item.name ||
+                        item.value ||
+                        ""
+                    );
+
+                }
+
+                return String(item);
+
+            })
+            .join(" ")
+            .trim();
+    }
+
+    if (
+        typeof value === "object"
+    ) {
+
+        return String(
+            value.name ||
+            value.value ||
+            ""
+        ).trim();
+
+    }
+
+    return String(value).trim();
+}
+
+
+// ============================================================
 // FETCH LOCATIONS
 // ============================================================
 
@@ -74,12 +124,14 @@ async function fetchLocations() {
                 method: "GET",
 
                 headers: {
-                    Authorization: `Bearer ${AIRTABLE_API_KEY}`
+                    Authorization:
+                        `Bearer ${AIRTABLE_API_KEY}`
                 }
             }
         );
 
-        const data = await response.json();
+        const data =
+            await response.json();
 
         console.log(
             "Locations data from Airtable:",
@@ -96,47 +148,56 @@ async function fetchLocations() {
             return [];
         }
 
-        allLocations = data.records.map(record => {
+        allLocations =
+            data.records.map(record => {
 
-            const fields = record.fields;
+                const fields =
+                    record.fields;
 
-            return {
+                return {
 
-                id: record.id,
+                    id:
+                        record.id,
 
-                name:
-                    fields.name || "",
+                    name:
+                        fields.name || "",
 
-                address:
-                    fields.address || "",
+                    address:
+                        fields.address || "",
 
-                latitude:
-                    Number(fields.latitude),
+                    latitude:
+                        Number(
+                            fields.latitude
+                        ),
 
-                longitude:
-                    Number(fields.longitude),
+                    longitude:
+                        Number(
+                            fields.longitude
+                        ),
 
-                totalSlots:
-                    Number(fields.totalSlots || 0),
+                    totalSlots:
+                        Number(
+                            fields.totalSlots || 0
+                        ),
 
-                city:
-                    fields.city || "",
+                    city:
+                        fields.city || "",
 
-                phone:
-                    fields.phone || "",
+                    phone:
+                        fields.phone || "",
 
-                ratePerHour:
-                    fields.ratePerHour || "",
+                    ratePerHour:
+                        fields.ratePerHour || "",
 
-                openTime:
-                    fields.openTime || "",
+                    openTime:
+                        fields.openTime || "",
 
-                closeTime:
-                    fields.closeTime || ""
+                    closeTime:
+                        fields.closeTime || ""
 
-            };
+                };
 
-        });
+            });
 
         console.log(
             "Processed locations:",
@@ -181,22 +242,26 @@ function populateLocationDropdown() {
     dropdown.innerHTML =
         '<option value="">Select a location...</option>';
 
-    allLocations.forEach(location => {
+    allLocations.forEach(
+        location => {
 
-        const option =
-            document.createElement("option");
+            const option =
+                document.createElement(
+                    "option"
+                );
 
-        option.value =
-            location.id;
+            option.value =
+                location.id;
 
-        option.textContent =
-            `${location.name} (${location.totalSlots} slots)`;
+            option.textContent =
+                `${location.name} (${location.totalSlots} slots)`;
 
-        dropdown.appendChild(
-            option
-        );
+            dropdown.appendChild(
+                option
+            );
 
-    });
+        }
+    );
 
 }
 
@@ -483,8 +548,12 @@ async function fetchSlotsForLocation(
                         sensorId:
                             fields.sensorId || "",
 
+                        // IMPORTANT:
+                        // Read vehicleNumber correctly
                         vehicleNumber:
-                            fields.vehicleNumber || ""
+                            getVehicleNumber(
+                                fields.vehicleNumber
+                            )
 
                     };
 
@@ -513,6 +582,25 @@ async function fetchSlotsForLocation(
 
         console.log(
             `Found ${locationSlots.length} slot records`
+        );
+
+        console.log(
+            "Vehicle numbers:",
+            locationSlots.map(
+                slot => ({
+                    slot:
+                        slot.slotNumber,
+
+                    sensor:
+                        slot.sensorId,
+
+                    status:
+                        slot.status,
+
+                    vehicleNumber:
+                        slot.vehicleNumber
+                })
+            )
         );
 
         return locationSlots;
@@ -669,12 +757,13 @@ function displayLocationSlots(
             }
 
 
-            if (slot.vehicleNumber) {
+            // IMPORTANT:
+            // Always read latest vehicle number
 
-                vehicleNumber =
-                    slot.vehicleNumber;
-
-            }
+            vehicleNumber =
+                getVehicleNumber(
+                    slot.vehicleNumber
+                );
 
 
             // Available slot
@@ -714,20 +803,39 @@ function displayLocationSlots(
 
 
         // ====================================================
-        // VEHICLE NUMBER
+        // VEHICLE NUMBER DISPLAY
         // ====================================================
-let vehicleHTML = "";
 
-const occupied = statusClass === "occupied";
+        let vehicleHTML =
+            "";
 
-if (occupied && vehicleNumber.trim() !== "") {
-    vehicleHTML = `
-        <p class="vehicle-number">
-            🚗 Vehicle Number:
-            <strong>${vehicleNumber}</strong>
-        </p>
-    `;
-}
+        const occupied =
+            statusClass === "occupied";
+
+
+        if (
+            occupied &&
+            vehicleNumber !== ""
+        ) {
+
+            vehicleHTML = `
+
+                <div class="vehicle-number-display">
+
+                    <div class="vehicle-label">
+                        🚗 VEHICLE NUMBER
+                    </div>
+
+                    <div class="vehicle-number-value">
+                        ${vehicleNumber}
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
 
         // ====================================================
         // SLOT HTML
@@ -852,9 +960,6 @@ function getStatusLabel(
         ).toUpperCase();
 
 
-    // IMPORTANT:
-    // Airtable status text first
-
     if (
         cleanStatus ===
         "OCCUPIED"
@@ -922,9 +1027,6 @@ function getStatusClass(
             status || ""
         ).toUpperCase();
 
-
-    // IMPORTANT:
-    // Airtable status text first
 
     if (
         cleanStatus ===
@@ -1000,7 +1102,6 @@ async function updateParkingSlot(
 
                     s.slotNumber ===
                     slotNumber
-
             );
 
 
@@ -1246,13 +1347,10 @@ async function reserveSlot(
 
 
     localStorage.setItem(
-
         "bookingHistory",
-
         JSON.stringify(
             history
         )
-
     );
 
 }
@@ -1366,11 +1464,8 @@ function initializeParkingMap() {
             {
 
                 center: [
-
                     centerLat,
-
                     centerLng
-
                 ],
 
                 zoom: 13,
@@ -1408,18 +1503,13 @@ function initializeParkingMap() {
                 L.marker(
 
                     [
-
                         location.latitude,
-
                         location.longitude
-
                     ],
 
                     {
-
                         title:
                             location.name
-
                     }
 
                 ).addTo(
@@ -1446,15 +1536,12 @@ function initializeParkingMap() {
                 <br>
 
                 <button
-
                     onclick="changeLocationFromMap('${location.id}')"
-
                     style="
                         width:100%;
                         padding:5px;
                         margin-top:5px;
                     "
-
                 >
 
                     View Slots
@@ -1504,10 +1591,8 @@ function initializeParkingMap() {
                     userLocation,
 
                     {
-
                         title:
                             "Your location"
-
                     }
 
                 )
@@ -1522,11 +1607,8 @@ function initializeParkingMap() {
 
 
                 parkingMap.setView(
-
                     userLocation,
-
                     13
-
                 );
 
             },
@@ -1535,11 +1617,8 @@ function initializeParkingMap() {
             error => {
 
                 console.log(
-
                     "Geolocation unavailable:",
-
                     error.message
-
                 );
 
             }
@@ -1594,10 +1673,8 @@ function updateMapForLocation(
 
     const location =
         allLocations.find(
-
             loc =>
                 loc.id === locationId
-
         );
 
 
@@ -1618,11 +1695,8 @@ function updateMapForLocation(
         parkingMap.setView(
 
             [
-
                 location.latitude,
-
                 location.longitude
-
             ],
 
             15
@@ -1682,11 +1756,9 @@ async function searchNearbySlots() {
                 calculateDistance(
 
                     userLocation[0],
-
                     userLocation[1],
 
                     location.latitude,
-
                     location.longitude
 
                 );
@@ -1721,9 +1793,7 @@ async function searchNearbySlots() {
 
 
         alert(
-
             `Nearest location: ${closestLocation.name} (${minDistance.toFixed(2)} km away)`
-
         );
 
     }
@@ -1736,12 +1806,10 @@ async function searchNearbySlots() {
 // ============================================================
 
 function calculateDistance(
-
     lat1,
     lon1,
     lat2,
     lon2
-
 ) {
 
     const R =
@@ -1749,29 +1817,21 @@ function calculateDistance(
 
 
     const dLat =
-
         (lat2 - lat1) *
-
         Math.PI /
-
         180;
 
 
     const dLon =
-
         (lon2 - lon1) *
-
         Math.PI /
-
         180;
 
 
     const a =
-
         Math.sin(
             dLat / 2
         ) *
-
         Math.sin(
             dLat / 2
         ) +
@@ -1798,9 +1858,7 @@ function calculateDistance(
 
 
     const c =
-
         2 *
-
         Math.atan2(
 
             Math.sqrt(a),
@@ -1845,28 +1903,22 @@ async function refreshSelectedLocationSlots() {
 
 
         await fetchSlotsForLocation(
-
             selectedLocationId
-
         );
 
 
         displayLocationSlots(
-
             selectedLocationId
-
         );
 
 
     } catch (error) {
 
         console.error(
-
             "Automatic refresh error:",
-
             error
-
         );
+
 
     } finally {
 
@@ -1903,9 +1955,7 @@ window.changeLocationFromMap =
 // ============================================================
 
 document.addEventListener(
-
     "DOMContentLoaded",
-
     async () => {
 
         console.log(
@@ -1919,15 +1969,13 @@ document.addEventListener(
 
 
         // Check Airtable every 2 seconds
+        // This updates the existing page.
+        // It does NOT refresh the browser.
 
         refreshTimer =
-
             setInterval(
-
                 refreshSelectedLocationSlots,
-
                 2000
-
             );
 
 
@@ -1936,5 +1984,4 @@ document.addEventListener(
         );
 
     }
-
 );

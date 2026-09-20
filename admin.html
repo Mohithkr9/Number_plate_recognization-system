@@ -1,453 +1,1005 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Admin Parking Dashboard</title>
 
+
     <style>
+
         * {
             box-sizing: border-box;
         }
 
+
         body {
+
             margin: 0;
-            font-family: Arial, sans-serif;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
             background: #f4f7fb;
+
             color: #222;
+
         }
+
+
+        /* ================= HEADER ================= */
 
         .header {
+
             background: #111827;
+
             color: white;
+
             padding: 18px 25px;
+
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
+
         }
+
 
         .header h1 {
+
             margin: 0;
+
             font-size: 24px;
+
         }
+
 
         .header-right {
+
             display: flex;
+
             align-items: center;
-            gap: 12px;
+
+            gap: 10px;
+
         }
+
 
         .admin-badge {
+
             background: #2563eb;
+
             padding: 8px 14px;
+
             border-radius: 20px;
+
             font-size: 13px;
+
+            font-weight: bold;
+
         }
 
-        .logout-btn,
-        .refresh-btn {
-            border: none;
-            padding: 9px 15px;
-            border-radius: 7px;
+
+        button {
+
             cursor: pointer;
+
+            border: none;
+
             font-weight: bold;
+
         }
+
+
+        .refresh-btn {
+
+            background: #2563eb;
+
+            color: white;
+
+            padding: 9px 15px;
+
+            border-radius: 7px;
+
+        }
+
 
         .logout-btn {
+
             background: #ef4444;
+
             color: white;
+
+            padding: 9px 15px;
+
+            border-radius: 7px;
+
         }
 
-        .refresh-btn {
-            background: #2563eb;
-            color: white;
-        }
+
+        /* ================= CONTAINER ================= */
 
         .container {
+
             max-width: 1500px;
+
             margin: 25px auto;
+
             padding: 0 20px;
+
         }
+
 
         .section-title {
-            margin-top: 25px;
+
+            margin-top: 30px;
+
             margin-bottom: 15px;
+
             font-size: 23px;
+
         }
 
-        /* STATISTICS */
+
+        /* ================= STATISTICS ================= */
 
         .stats {
+
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
             gap: 18px;
+
             margin-bottom: 25px;
+
         }
+
 
         .stat-card {
+
             background: white;
+
             border-radius: 12px;
+
             padding: 20px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+
+            box-shadow:
+                0 3px 12px
+                rgba(0,0,0,0.08);
+
         }
+
 
         .stat-title {
+
             color: #666;
+
             font-size: 14px;
+
             margin-bottom: 8px;
+
         }
+
 
         .stat-number {
+
             font-size: 30px;
+
             font-weight: bold;
+
         }
 
-        /* LOCATIONS */
-
-        .locations-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 15px;
-        }
-
-        .location-card {
-            background: white;
-            padding: 18px;
-            border-radius: 12px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-        }
-
-        .location-name {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 12px;
-        }
-
-        .location-info {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 8px;
-        }
 
         .available-text {
+
             color: #16a34a;
-            font-weight: bold;
+
         }
+
 
         .occupied-text {
+
             color: #dc2626;
-            font-weight: bold;
+
         }
+
 
         .reserved-text {
+
             color: #d97706;
-            font-weight: bold;
+
         }
 
-        /* FILTERS */
+
+        /* ================= LOCATIONS ================= */
+
+        .locations-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(230px, 1fr));
+
+            gap: 15px;
+
+        }
+
+
+        .location-card {
+
+            background: white;
+
+            padding: 18px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 3px 12px
+                rgba(0,0,0,0.08);
+
+        }
+
+
+        .location-name {
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            margin-bottom: 12px;
+
+        }
+
+
+        .location-info {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-top: 8px;
+
+        }
+
+
+        /* ================= FILTER ================= */
 
         .filter-box {
+
             background: white;
+
             padding: 18px;
+
             border-radius: 12px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+
+            box-shadow:
+                0 3px 12px
+                rgba(0,0,0,0.08);
+
             margin-bottom: 15px;
+
         }
 
+
         .filters {
+
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr auto;
+
+            grid-template-columns:
+                2fr 1fr 1fr auto;
+
             gap: 12px;
+
         }
+
 
         .filters input,
         .filters select {
+
             width: 100%;
+
             padding: 11px 12px;
+
             border: 1px solid #d1d5db;
+
             border-radius: 7px;
+
             background: white;
+
             font-size: 14px;
+
         }
+
 
         .clear-btn {
-            border: none;
-            padding: 11px 18px;
-            border-radius: 7px;
+
             background: #6b7280;
+
             color: white;
-            cursor: pointer;
-            font-weight: bold;
+
+            padding: 11px 18px;
+
+            border-radius: 7px;
+
         }
 
-        /* TABLE */
+
+        /* ================= TABLE ================= */
 
         .table-container {
+
             background: white;
+
             border-radius: 12px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+
+            box-shadow:
+                0 3px 12px
+                rgba(0,0,0,0.08);
+
             overflow-x: auto;
+
         }
+
 
         table {
+
             width: 100%;
+
             border-collapse: collapse;
+
             min-width: 1000px;
+
         }
+
 
         th {
+
             background: #1f2937;
+
             color: white;
+
             padding: 13px;
+
             text-align: left;
+
             font-size: 14px;
+
             white-space: nowrap;
+
         }
+
 
         td {
+
             padding: 13px;
-            border-bottom: 1px solid #e5e7eb;
+
+            border-bottom:
+                1px solid #e5e7eb;
+
             font-size: 14px;
+
         }
+
 
         tbody tr:hover {
+
             background: #f8fafc;
+
         }
+
+
+        /* ================= STATUS ================= */
 
         .status {
+
             display: inline-block;
+
             padding: 5px 10px;
+
             border-radius: 15px;
+
             font-size: 12px;
+
             font-weight: bold;
+
         }
+
 
         .status-available {
+
             background: #dcfce7;
+
             color: #166534;
+
         }
+
 
         .status-occupied {
+
             background: #fee2e2;
+
             color: #991b1b;
+
         }
+
 
         .status-reserved {
+
             background: #fef3c7;
+
             color: #92400e;
+
         }
+
 
         .vehicle-number {
+
             font-weight: bold;
+
             color: #1d4ed8;
+
         }
+
+
+        .password-set {
+
+            background: #dcfce7;
+
+            color: #166534;
+
+            padding: 5px 10px;
+
+            border-radius: 15px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+        }
+
 
         .no-data {
+
             text-align: center;
+
             padding: 30px;
+
             color: #666;
+
         }
+
+
+        /* ================= SYNC ================= */
 
         .sync-bar {
+
             margin-top: 15px;
+
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
+
             background: white;
+
             padding: 12px 15px;
+
             border-radius: 8px;
+
             font-size: 13px;
+
             color: #555;
+
         }
+
 
         .sync-ok {
+
             color: #16a34a;
+
             font-weight: bold;
+
         }
+
 
         .sync-error {
+
             color: #dc2626;
+
             font-weight: bold;
+
         }
+
+
+        /* ================= RESPONSIVE ================= */
 
         @media (max-width: 900px) {
+
             .stats {
-                grid-template-columns: repeat(2, 1fr);
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
             }
+
 
             .filters {
+
                 grid-template-columns: 1fr;
+
             }
+
 
             .header {
+
                 flex-direction: column;
+
                 align-items: flex-start;
+
                 gap: 12px;
+
             }
+
         }
 
+
         @media (max-width: 500px) {
+
             .stats {
+
                 grid-template-columns: 1fr;
+
             }
+
         }
+
     </style>
+
 </head>
+
 
 <body>
 
-    <div class="header">
-        <h1>🅿️ Admin Parking Dashboard</h1>
 
-        <div class="header-right">
-            <span class="admin-badge">ADMIN</span>
-            <button class="refresh-btn" onclick="manualRefresh()">
-                🔄 Refresh
-            </button>
-            <button class="logout-btn" onclick="logoutAdmin()">
-                Logout
-            </button>
-        </div>
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<div class="header">
+
+    <h1>
+        🅿️ Admin Parking Dashboard
+    </h1>
+
+
+    <div class="header-right">
+
+        <span class="admin-badge">
+            ADMIN
+        </span>
+
+
+        <button
+            class="refresh-btn"
+            onclick="manualRefresh()">
+
+            🔄 Refresh
+
+        </button>
+
+
+        <button
+            class="logout-btn"
+            onclick="logoutAdmin()">
+
+            Logout
+
+        </button>
+
     </div>
 
+</div>
 
-    <div class="container">
 
-        <!-- STATISTICS -->
 
-        <div class="stats">
+<div class="container">
 
-            <div class="stat-card">
-                <div class="stat-title">Total Locations</div>
-                <div class="stat-number" id="totalLocations">0</div>
-            </div>
 
-            <div class="stat-card">
-                <div class="stat-title">Total Slots</div>
-                <div class="stat-number" id="totalSlots">0</div>
-            </div>
+<!-- =====================================================
+     STATISTICS
+===================================================== -->
 
-            <div class="stat-card">
-                <div class="stat-title">Available Slots</div>
-                <div class="stat-number available-text" id="availableSlots">
-                    0
-                </div>
-            </div>
+<div class="stats">
 
-            <div class="stat-card">
-                <div class="stat-title">Occupied Slots</div>
-                <div class="stat-number occupied-text" id="occupiedSlots">
-                    0
-                </div>
-            </div>
 
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Total Locations
         </div>
 
+        <div
+            class="stat-number"
+            id="totalLocations">
 
-        <!-- LOCATION SUMMARY -->
-
-        <h2 class="section-title">📍 Parking Locations</h2>
-
-        <div id="locationsContainer" class="locations-grid">
-            <div class="no-data">
-                Loading locations...
-            </div>
-        </div>
-
-
-        <!-- ALL PARKING SLOTS -->
-
-        <h2 class="section-title">🅿️ All Parking Slot Details</h2>
-
-        <div class="filter-box">
-
-            <div class="filters">
-
-                <input
-                    type="text"
-                    id="slotSearch"
-                    placeholder="🔍 Search location, slot, sensor, vehicle..."
-                    oninput="filterSlots()"
-                >
-
-                <select id="locationFilter" onchange="filterSlots()">
-                    <option value="ALL">All Locations</option>
-                </select>
-
-                <select id="statusFilter" onchange="filterSlots()">
-                    <option value="ALL">All Status</option>
-                    <option value="OCCUPIED">Occupied</option>
-                    <option value="AVAILABLE">Available</option>
-                    <option value="RESERVED">Reserved</option>
-                </select>
-
-                <button class="clear-btn" onclick="clearFilters()">
-                    Clear
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <div class="table-container">
-
-            <table>
-
-                <thead>
-                    <tr>
-                        <th>Location</th>
-                        <th>Slot</th>
-                        <th>Sensor</th>
-                        <th>Status</th>
-                        <th>Status Code</th>
-                        <th>Vehicle Number</th>
-                        <th>Record ID</th>
-                    </tr>
-                </thead>
-
-                <tbody id="slotsTableBody">
-                    <tr>
-                        <td colspan="7" class="no-data">
-                            Loading parking slots...
-                        </td>
-                    </tr>
-                </tbody>
-
-            </table>
-
-        </div>
-
-
-        <div class="sync-bar">
-
-            <div>
-                Last updated:
-                <strong id="lastUpdated">--</strong>
-            </div>
-
-            <div id="syncStatus" class="sync-ok">
-                ● Connected
-            </div>
+            0
 
         </div>
 
     </div>
+
+
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Total Slots
+        </div>
+
+        <div
+            class="stat-number"
+            id="totalSlots">
+
+            0
+
+        </div>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Available Slots
+        </div>
+
+        <div
+            class="stat-number available-text"
+            id="availableSlots">
+
+            0
+
+        </div>
+
+    </div>
+
+
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Occupied Slots
+        </div>
+
+        <div
+            class="stat-number occupied-text"
+            id="occupiedSlots">
+
+            0
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     LOCATIONS
+===================================================== -->
+
+<h2 class="section-title">
+    📍 Parking Locations
+</h2>
+
+
+<div
+    id="locationsContainer"
+    class="locations-grid">
+
+    <div class="no-data">
+        Loading locations...
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     PARKING SLOTS
+===================================================== -->
+
+<h2 class="section-title">
+    🅿️ All Parking Slot Details
+</h2>
+
+
+<div class="filter-box">
+
+
+    <div class="filters">
+
+
+        <input
+            type="text"
+            id="slotSearch"
+            placeholder="🔍 Search location, slot, sensor, vehicle..."
+            oninput="filterSlots()"
+        >
+
+
+        <select
+            id="locationFilter"
+            onchange="filterSlots()">
+
+            <option value="ALL">
+                All Locations
+            </option>
+
+        </select>
+
+
+        <select
+            id="statusFilter"
+            onchange="filterSlots()">
+
+            <option value="ALL">
+                All Status
+            </option>
+
+            <option value="OCCUPIED">
+                Occupied
+            </option>
+
+            <option value="AVAILABLE">
+                Available
+            </option>
+
+            <option value="RESERVED">
+                Reserved
+            </option>
+
+        </select>
+
+
+        <button
+            class="clear-btn"
+            onclick="clearFilters()">
+
+            Clear
+
+        </button>
+
+
+    </div>
+
+</div>
+
+
+
+<div class="table-container">
+
+
+    <table>
+
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Location
+                </th>
+
+                <th>
+                    Slot
+                </th>
+
+                <th>
+                    Sensor
+                </th>
+
+                <th>
+                    Status
+                </th>
+
+                <th>
+                    Status Code
+                </th>
+
+                <th>
+                    Vehicle Number
+                </th>
+
+                <th>
+                    Record ID
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody id="slotsTableBody">
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    class="no-data">
+
+                    Loading parking slots...
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+
+    </table>
+
+</div>
+
+
+
+<!-- =====================================================
+     USERS
+===================================================== -->
+
+<h2 class="section-title">
+    👥 Registered Users
+</h2>
+
+
+<div class="filter-box">
+
+
+    <input
+        type="text"
+        id="userSearch"
+        placeholder="🔍 Search name, email, phone, vehicle..."
+        oninput="filterUsers()"
+        style="
+            width:100%;
+            padding:11px 12px;
+            border:1px solid #d1d5db;
+            border-radius:7px;
+            font-size:14px;
+        "
+    >
+
+
+</div>
+
+
+
+<div class="table-container">
+
+
+    <table>
+
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Name
+                </th>
+
+                <th>
+                    Email / Login
+                </th>
+
+                <th>
+                    Phone
+                </th>
+
+                <th>
+                    Vehicle Model
+                </th>
+
+                <th>
+                    Vehicle Number
+                </th>
+
+                <th>
+                    Role
+                </th>
+
+                <th>
+                    Password
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody id="usersTableBody">
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    class="no-data">
+
+                    Loading users...
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+
+    </table>
+
+</div>
+
+
+
+<!-- =====================================================
+     SYNC STATUS
+===================================================== -->
+
+<div class="sync-bar">
+
+    <div>
+
+        Last updated:
+
+        <strong id="lastUpdated">
+            --
+        </strong>
+
+    </div>
+
+
+    <div
+        id="syncStatus"
+        class="sync-ok">
+
+        ● Connected
+
+    </div>
+
+</div>
+
+
+</div>
+
 
 
 <script>
 
-/* =========================================================
+
+/* =====================================================
    AIRTABLE CONFIGURATION
-   ========================================================= */
+===================================================== */
+
 
 /*
-   IMPORTANT:
-   Replace ONLY the value below with your existing Airtable PAT.
-
-   Do NOT send your PAT to me.
-*/
+ * IMPORTANT:
+ * Put your Airtable PAT here.
+ *
+ * DO NOT send your real PAT in this chat.
+ */
 
 const AIRTABLE_API_KEY =
     "patonNHFlI2tk3iRS.c1d7c5f15942e5717c1d3fd3d7c13213c4a762e4dd57dd655e44cba3130581bb";
@@ -465,145 +1017,710 @@ const SLOTS_TABLE =
     "ParkingSlots";
 
 
-/* =========================================================
-   GLOBAL DATA
-   ========================================================= */
+const USERS_TABLE =
+    "Users";
+
+
+/* =====================================================
+   GLOBAL VARIABLES
+===================================================== */
 
 let allLocations = [];
+
 let allSlots = [];
 
+let allUsers = [];
+
 let firstLoad = true;
+
 let refreshInProgress = false;
+
 let refreshTimer = null;
 
 
-/* =========================================================
+/* =====================================================
    ADMIN CHECK
-   ========================================================= */
+===================================================== */
 
 function checkAdmin() {
 
+
     const currentUser =
+
         JSON.parse(
-            localStorage.getItem("currentUser") || "null"
+
+            localStorage.getItem(
+                "currentUser"
+            ) || "null"
+
         );
 
+
     if (!currentUser) {
-        window.location.href = "login.html";
+
+        window.location.href =
+            "login.html";
+
         return false;
+
     }
+
 
     const role =
-        String(currentUser.role || "user")
-            .toLowerCase()
-            .trim();
+
+        String(
+            currentUser.role ||
+            "user"
+        )
+        .toLowerCase()
+        .trim();
+
 
     if (role !== "admin") {
-        alert("Admin access required.");
-        window.location.href = "dashboard.html";
+
+        alert(
+            "Admin access required."
+        );
+
+
+        window.location.href =
+            "dashboard.html";
+
+
         return false;
+
     }
 
+
     return true;
+
 }
 
 
-/* =========================================================
-   AIRTABLE REQUEST
-   ========================================================= */
+/* =====================================================
+   FETCH ALL AIRTABLE RECORDS
+===================================================== */
 
-async function fetchAllRecords(tableName) {
+async function fetchAllRecords(
+    tableName
+) {
+
 
     let records = [];
+
     let offset = null;
+
 
     do {
 
+
         let url =
-            `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(tableName)}?pageSize=100`;
+
+            `https://api.airtable.com/v0/` +
+            `${AIRTABLE_BASE_ID}/` +
+            `${encodeURIComponent(tableName)}` +
+            `?pageSize=100`;
+
 
         if (offset) {
-            url += `&offset=${encodeURIComponent(offset)}`;
+
+            url +=
+                `&offset=${encodeURIComponent(offset)}`;
+
         }
 
-        const response = await fetch(url, {
 
-            headers: {
-                Authorization:
-                    `Bearer ${AIRTABLE_API_KEY}`
-            }
+        const response =
 
-        });
+            await fetch(
+                url,
+                {
+
+                    headers: {
+
+                        Authorization:
+                            `Bearer ${AIRTABLE_API_KEY}`
+
+                    }
+
+                }
+            );
+
 
         if (!response.ok) {
+
             throw new Error(
                 `Airtable error ${response.status}`
             );
+
         }
 
-        const data = await response.json();
+
+        const data =
+            await response.json();
+
 
         if (data.records) {
-            records = records.concat(data.records);
+
+            records =
+                records.concat(
+                    data.records
+                );
+
         }
 
-        offset = data.offset || null;
 
-    } while (offset);
+        offset =
+            data.offset || null;
+
+
+    }
+    while (offset);
 
 
     return records;
+
 }
 
 
-/* =========================================================
-   LOAD DATA
-   ========================================================= */
+/* =====================================================
+   NORMALIZE LINKED VALUE
+===================================================== */
 
-async function loadAdminData(manual = false) {
+function normalizeLinkedValue(
+    value
+) {
+
+
+    if (Array.isArray(value)) {
+
+
+        if (value.length === 0) {
+
+            return "";
+
+        }
+
+
+        const first =
+            value[0];
+
+
+        if (
+            typeof first === "object" &&
+            first !== null
+        ) {
+
+            return String(
+
+                first.id ||
+                first.name ||
+                ""
+
+            ).trim();
+
+        }
+
+
+        return String(
+            first
+        ).trim();
+
+    }
+
+
+
+    if (
+        typeof value === "object" &&
+        value !== null
+    ) {
+
+        return String(
+
+            value.id ||
+            value.name ||
+            ""
+
+        ).trim();
+
+    }
+
+
+    return String(
+        value || ""
+    ).trim();
+
+}
+
+
+/* =====================================================
+   NORMALIZE LOCATIONS
+===================================================== */
+
+function normalizeLocations(
+    records
+) {
+
+
+    return records.map(
+        record => {
+
+
+            const f =
+                record.fields || {};
+
+
+            return {
+
+
+                id:
+                    String(
+                        record.id || ""
+                    ).trim(),
+
+
+                name:
+                    String(
+
+                        f.name ||
+                        f.Name ||
+                        f.locationName ||
+                        f.LocationName ||
+                        "Unknown Location"
+
+                    ).trim(),
+
+
+                address:
+                    f.address ||
+                    f.Address ||
+                    "",
+
+
+                totalSlots:
+                    Number(
+
+                        f.totalSlots ||
+                        f.TotalSlots ||
+                        0
+
+                    ),
+
+
+                city:
+                    f.city ||
+                    f.City ||
+                    "",
+
+
+                phone:
+                    f.phone ||
+                    f.Phone ||
+                    "",
+
+
+                ratePerHour:
+                    f.ratePerHour ||
+                    f.RatePerHour ||
+                    "",
+
+
+                openTime:
+                    f.openTime ||
+                    f.OpenTime ||
+                    "",
+
+
+                closeTime:
+                    f.closeTime ||
+                    f.CloseTime ||
+                    ""
+
+            };
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   NORMALIZE SLOTS
+===================================================== */
+
+function normalizeSlots(
+    records
+) {
+
+
+    return records.map(
+        record => {
+
+
+            const f =
+                record.fields || {};
+
+
+            return {
+
+
+                id:
+                    String(
+                        record.id || ""
+                    ).trim(),
+
+
+                locationId:
+                    normalizeLinkedValue(
+
+                        f.locationId ??
+                        f.LocationId ??
+                        f.location ??
+                        f.Location
+
+                    ),
+
+
+                slotNumber:
+                    f.slotNumber ??
+                    f.SlotNumber ??
+                    "",
+
+
+                statusCode:
+                    f.statusCode ??
+                    f.StatusCode ??
+                    "",
+
+
+                status:
+                    String(
+
+                        f.status ||
+                        f.Status ||
+                        ""
+
+                    )
+                    .toUpperCase()
+                    .trim(),
+
+
+                sensorId:
+                    f.sensorId ||
+                    f.SensorId ||
+                    "",
+
+
+                vehicleNumber:
+                    f.vehicleNumber ||
+                    f.VehicleNumber ||
+                    ""
+
+            };
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   FIND LOCATION FOR SLOT
+===================================================== */
+
+function findLocationForSlot(
+    slot
+) {
+
+
+    const value =
+
+        String(
+            slot.locationId || ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+    if (!value) {
+
+        return null;
+
+    }
+
+
+    return allLocations.find(
+        location => {
+
+
+            const id =
+
+                String(
+                    location.id || ""
+                )
+                .trim()
+                .toLowerCase();
+
+
+            const name =
+
+                String(
+                    location.name || ""
+                )
+                .trim()
+                .toLowerCase();
+
+
+            return (
+
+                value === id ||
+
+                value === name
+
+            );
+
+        }
+    ) || null;
+
+}
+
+
+/* =====================================================
+   LOCATION NAME
+===================================================== */
+
+function getLocationName(
+    locationId
+) {
+
+
+    const value =
+
+        String(
+            locationId || ""
+        )
+        .trim()
+        .toLowerCase();
+
+
+    if (!value) {
+
+        return "Unknown Location";
+
+    }
+
+
+    const location =
+
+        allLocations.find(
+            item => {
+
+
+                const id =
+
+                    String(
+                        item.id || ""
+                    )
+                    .trim()
+                    .toLowerCase();
+
+
+                const name =
+
+                    String(
+                        item.name || ""
+                    )
+                    .trim()
+                    .toLowerCase();
+
+
+                return (
+
+                    value === id ||
+
+                    value === name
+
+                );
+
+            }
+        );
+
+
+    return location
+        ? location.name
+        : "Unknown Location";
+
+}
+
+
+/* =====================================================
+   STATUS LABEL
+===================================================== */
+
+function getStatusLabel(
+    statusCode,
+    status
+) {
+
+
+    const cleanStatus =
+
+        String(
+            status || ""
+        )
+        .toUpperCase()
+        .trim();
+
+
+    if (
+        cleanStatus ===
+        "OCCUPIED"
+    ) {
+
+        return "OCCUPIED";
+
+    }
+
+
+    if (
+        cleanStatus ===
+        "AVAILABLE"
+    ) {
+
+        return "AVAILABLE";
+
+    }
+
+
+    if (
+        cleanStatus ===
+        "RESERVED"
+    ) {
+
+        return "RESERVED";
+
+    }
+
+
+    if (
+        Number(statusCode) === 0
+    ) {
+
+        return "OCCUPIED";
+
+    }
+
+
+    if (
+        Number(statusCode) === 1
+    ) {
+
+        return "AVAILABLE";
+
+    }
+
+
+    if (
+        Number(statusCode) === 2
+    ) {
+
+        return "RESERVED";
+
+    }
+
+
+    return "UNKNOWN";
+
+}
+
+
+/* =====================================================
+   LOAD PARKING DATA
+===================================================== */
+
+async function loadAdminData(
+    manual = false
+) {
+
 
     if (refreshInProgress) {
+
         return;
+
     }
+
 
     refreshInProgress = true;
 
+
     const syncStatus =
-        document.getElementById("syncStatus");
+
+        document.getElementById(
+            "syncStatus"
+        );
+
 
     if (manual) {
-        syncStatus.textContent = "● Refreshing...";
-        syncStatus.className = "";
+
+        syncStatus.textContent =
+            "● Refreshing...";
+
     }
+
 
     try {
 
-        const results = await Promise.all([
 
-            fetchAllRecords(LOCATIONS_TABLE),
+        const results =
 
-            fetchAllRecords(SLOTS_TABLE)
+            await Promise.all([
 
-        ]);
+                fetchAllRecords(
+                    LOCATIONS_TABLE
+                ),
+
+                fetchAllRecords(
+                    SLOTS_TABLE
+                )
+
+            ]);
 
 
         const newLocations =
-            normalizeLocations(results[0]);
+
+            normalizeLocations(
+                results[0]
+            );
+
 
         const newSlots =
-            normalizeSlots(results[1]);
+
+            normalizeSlots(
+                results[1]
+            );
 
 
         if (firstLoad) {
 
-            allLocations = newLocations;
-            allSlots = newSlots;
+
+            allLocations =
+                newLocations;
+
+
+            allSlots =
+                newSlots;
+
 
             updateFullDashboard();
 
+
             firstLoad = false;
 
-        } else {
+
+        }
+
+        else {
+
 
             updateChangedData(
                 newLocations,
@@ -613,207 +1730,59 @@ async function loadAdminData(manual = false) {
         }
 
 
-        document.getElementById("lastUpdated")
-            .textContent =
-            new Date().toLocaleTimeString();
+        document.getElementById(
+            "lastUpdated"
+        ).textContent =
+
+            new Date()
+                .toLocaleTimeString();
 
 
         syncStatus.textContent =
             "● Connected";
 
+
         syncStatus.className =
             "sync-ok";
 
-    } catch (error) {
+
+    }
+
+    catch (error) {
+
 
         console.error(
-            "Admin dashboard error:",
+            "Parking data error:",
             error
         );
+
 
         syncStatus.textContent =
             "● Sync error";
 
+
         syncStatus.className =
             "sync-error";
 
-    } finally {
 
-        refreshInProgress = false;
-    }
-}
-
-
-/* =========================================================
-   NORMALIZE LOCATIONS
-   ========================================================= */
-
-function normalizeLocations(records) {
-
-    return records.map(record => {
-
-        const f = record.fields || {};
-
-        return {
-
-            id: record.id,
-
-            name:
-                String(
-                    f.name ||
-                    f.Name ||
-                    f.locationName ||
-                    f.LocationName ||
-                    "Unknown Location"
-                ).trim(),
-
-            address:
-                f.address ||
-                f.Address ||
-                "",
-
-            totalSlots:
-                Number(
-                    f.totalSlots ||
-                    f.TotalSlots ||
-                    0
-                ),
-
-            city:
-                f.city ||
-                f.City ||
-                "",
-
-            phone:
-                f.phone ||
-                f.Phone ||
-                "",
-
-            ratePerHour:
-                f.ratePerHour ||
-                f.RatePerHour ||
-                "",
-
-            openTime:
-                f.openTime ||
-                f.OpenTime ||
-                "",
-
-            closeTime:
-                f.closeTime ||
-                f.CloseTime ||
-                ""
-
-        };
-
-    });
-}
-
-
-/* =========================================================
-   NORMALIZE SLOTS
-   ========================================================= */
-
-function normalizeSlots(records) {
-
-    return records.map(record => {
-
-        const f = record.fields || {};
-
-        return {
-
-            id: record.id,
-
-            locationId:
-                normalizeLinkedValue(
-                    f.locationId ??
-                    f.LocationId ??
-                    f.location ??
-                    f.Location
-                ),
-
-            slotNumber:
-                f.slotNumber ??
-                f.SlotNumber ??
-                "",
-
-            statusCode:
-                f.statusCode ??
-                f.StatusCode ??
-                "",
-
-            status:
-                String(
-                    f.status ||
-                    f.Status ||
-                    ""
-                ).toUpperCase(),
-
-            sensorId:
-                f.sensorId ||
-                f.SensorId ||
-                "",
-
-            vehicleNumber:
-                f.vehicleNumber ||
-                f.VehicleNumber ||
-                ""
-
-        };
-
-    });
-}
-
-
-/* =========================================================
-   HANDLE AIRTABLE LINKED RECORD VALUES
-   ========================================================= */
-
-function normalizeLinkedValue(value) {
-
-    if (Array.isArray(value)) {
-
-        if (value.length === 0) {
-            return "";
-        }
-
-        const first = value[0];
-
-        if (
-            typeof first === "object" &&
-            first !== null
-        ) {
-            return String(
-                first.id ||
-                first.name ||
-                ""
-            );
-        }
-
-        return String(first);
     }
 
-    if (
-        typeof value === "object" &&
-        value !== null
-    ) {
+    finally {
 
-        return String(
-            value.id ||
-            value.name ||
-            ""
-        );
+        refreshInProgress =
+            false;
+
     }
 
-    return String(value || "");
 }
 
 
-/* =========================================================
+/* =====================================================
    UPDATE FULL DASHBOARD
-   ========================================================= */
+===================================================== */
 
 function updateFullDashboard() {
+
 
     updateStatistics();
 
@@ -826,28 +1795,33 @@ function updateFullDashboard() {
 }
 
 
-/* =========================================================
+/* =====================================================
    UPDATE CHANGED DATA
-   ========================================================= */
+===================================================== */
 
 function updateChangedData(
     newLocations,
     newSlots
 ) {
 
+
     const locationsChanged =
+
         JSON.stringify(
             allLocations
         ) !==
+
         JSON.stringify(
             newLocations
         );
 
 
     const slotsChanged =
+
         JSON.stringify(
             allSlots
         ) !==
+
         JSON.stringify(
             newSlots
         );
@@ -855,19 +1829,20 @@ function updateChangedData(
 
     if (locationsChanged) {
 
+
         allLocations =
             newLocations;
+
 
         populateLocationFilter();
 
         displayLocations();
+
     }
 
 
     if (slotsChanged) {
 
-        const oldSlots =
-            allSlots;
 
         allSlots =
             newSlots;
@@ -875,39 +1850,21 @@ function updateChangedData(
 
         updateStatistics();
 
-        /*
-         * Update only changed table rows.
-         * The entire table is NOT recreated.
-         */
-        updateSlotRowsOnly(
-            oldSlots,
-            newSlots
-        );
-
-
-        /*
-         * Update location counters without
-         * recreating the entire dashboard.
-         */
         updateLocationCounters();
 
+        displayFilteredRows();
 
-        /*
-         * Re-apply filters to ensure that
-         * changed records respect the
-         * currently selected filters.
-         */
-        displayFilteredRows(false);
     }
 
 }
 
 
-/* =========================================================
+/* =====================================================
    STATISTICS
-   ========================================================= */
+===================================================== */
 
 function updateStatistics() {
+
 
     document.getElementById(
         "totalLocations"
@@ -922,27 +1879,42 @@ function updateStatistics() {
 
 
     let available = 0;
+
     let occupied = 0;
 
 
-    allSlots.forEach(slot => {
-
-        const status =
-            getStatusLabel(
-                slot.statusCode,
-                slot.status
-            );
+    allSlots.forEach(
+        slot => {
 
 
-        if (status === "AVAILABLE") {
-            available++;
+            const status =
+                getStatusLabel(
+                    slot.statusCode,
+                    slot.status
+                );
+
+
+            if (
+                status ===
+                "AVAILABLE"
+            ) {
+
+                available++;
+
+            }
+
+
+            if (
+                status ===
+                "OCCUPIED"
+            ) {
+
+                occupied++;
+
+            }
+
         }
-
-        if (status === "OCCUPIED") {
-            occupied++;
-        }
-
-    });
+    );
 
 
     document.getElementById(
@@ -955,337 +1927,394 @@ function updateStatistics() {
         "occupiedSlots"
     ).textContent =
         occupied;
+
 }
 
 
-/* =========================================================
-   GET LOCATION NAME
-   ========================================================= */
-
-function getLocationName(locationId) {
-
-    if (!locationId) {
-        return "Unknown Location";
-    }
-
-
-    const location =
-        allLocations.find(
-            item =>
-                item.id === locationId
-        );
-
-
-    if (location) {
-        return location.name;
-    }
-
-
-    return "Unknown Location";
-}
-
-
-/* =========================================================
-   GET LOCATION RECORD ID
-   ========================================================= */
-
-function getLocationRecordId(locationName) {
-
-    const location =
-        allLocations.find(
-            item =>
-                item.name === locationName
-        );
-
-
-    return location
-        ? location.id
-        : "";
-}
-
-
-/* =========================================================
-   STATUS LABEL
-   ========================================================= */
-
-function getStatusLabel(
-    statusCode,
-    status
-) {
-
-    const cleanStatus =
-        String(status || "")
-            .toUpperCase()
-            .trim();
-
-
-    if (cleanStatus === "OCCUPIED") {
-        return "OCCUPIED";
-    }
-
-
-    if (cleanStatus === "AVAILABLE") {
-        return "AVAILABLE";
-    }
-
-
-    if (cleanStatus === "RESERVED") {
-        return "RESERVED";
-    }
-
-
-    if (Number(statusCode) === 0) {
-        return "OCCUPIED";
-    }
-
-
-    if (Number(statusCode) === 1) {
-        return "AVAILABLE";
-    }
-
-
-    if (Number(statusCode) === 2) {
-        return "RESERVED";
-    }
-
-
-    return "UNKNOWN";
-}
-
-
-/* =========================================================
+/* =====================================================
    DISPLAY LOCATIONS
-   ========================================================= */
+===================================================== */
 
 function displayLocations() {
 
+
     const container =
+
         document.getElementById(
             "locationsContainer"
         );
 
 
-    if (allLocations.length === 0) {
+    if (
+        allLocations.length ===
+        0
+    ) {
+
 
         container.innerHTML = `
+
             <div class="no-data">
                 No locations found.
             </div>
+
         `;
 
+
         return;
+
     }
 
 
-    /*
-     * Create location cards only on
-     * initial/location-data changes.
-     */
     container.innerHTML =
-        allLocations.map(location => {
 
-            const locationSlots =
-                allSlots.filter(
-                    slot =>
-                        slot.locationId ===
-                        location.id
+        allLocations.map(
+            location => {
+
+
+                const locationSlots =
+
+                    allSlots.filter(
+                        slot => {
+
+
+                            const
+                            slotLocation =
+
+                                findLocationForSlot(
+                                    slot
+                                );
+
+
+                            return (
+
+                                slotLocation &&
+
+                                slotLocation.id ===
+                                location.id
+
+                            );
+
+                        }
+                    );
+
+
+                let available = 0;
+
+                let occupied = 0;
+
+                let reserved = 0;
+
+
+                locationSlots.forEach(
+                    slot => {
+
+
+                        const status =
+
+                            getStatusLabel(
+                                slot.statusCode,
+                                slot.status
+                            );
+
+
+                        if (
+                            status ===
+                            "AVAILABLE"
+                        ) {
+
+                            available++;
+
+                        }
+
+
+                        if (
+                            status ===
+                            "OCCUPIED"
+                        ) {
+
+                            occupied++;
+
+                        }
+
+
+                        if (
+                            status ===
+                            "RESERVED"
+                        ) {
+
+                            reserved++;
+
+                        }
+
+                    }
                 );
 
 
-            const available =
-                locationSlots.filter(
-                    slot =>
-                        getStatusLabel(
-                            slot.statusCode,
-                            slot.status
-                        ) === "AVAILABLE"
-                ).length;
+                return `
+
+                    <div
+                        class="location-card"
+                        data-location-card="${escapeHTML(location.id)}"
+                    >
+
+                        <div class="location-name">
+
+                            📍
+                            ${escapeHTML(
+                                location.name
+                            )}
+
+                        </div>
 
 
-            const occupied =
-                locationSlots.filter(
-                    slot =>
-                        getStatusLabel(
-                            slot.statusCode,
-                            slot.status
-                        ) === "OCCUPIED"
-                ).length;
+                        <div class="location-info">
+
+                            <span>
+                                Total Slots
+                            </span>
+
+                            <strong data-total>
+                                ${locationSlots.length}
+                            </strong>
+
+                        </div>
 
 
-            const reserved =
-                locationSlots.filter(
-                    slot =>
-                        getStatusLabel(
-                            slot.statusCode,
-                            slot.status
-                        ) === "RESERVED"
-                ).length;
+                        <div class="location-info">
+
+                            <span>
+                                Available
+                            </span>
+
+                            <strong
+                                class="available-text"
+                                data-available
+                            >
+                                ${available}
+                            </strong>
+
+                        </div>
 
 
-            return `
+                        <div class="location-info">
 
-                <div
-                    class="location-card"
-                    data-location-card="${escapeHTML(location.id)}"
-                >
+                            <span>
+                                Occupied
+                            </span>
 
-                    <div class="location-name">
-                        📍 ${escapeHTML(location.name)}
+                            <strong
+                                class="occupied-text"
+                                data-occupied
+                            >
+                                ${occupied}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="location-info">
+
+                            <span>
+                                Reserved
+                            </span>
+
+                            <strong
+                                class="reserved-text"
+                                data-reserved
+                            >
+                                ${reserved}
+                            </strong>
+
+                        </div>
+
                     </div>
 
-                    <div class="location-info">
-                        <span>Total Slots</span>
-                        <strong data-total>
-                            ${locationSlots.length}
-                        </strong>
-                    </div>
+                `;
 
-                    <div class="location-info">
-                        <span>Available</span>
-                        <strong
-                            class="available-text"
-                            data-available
-                        >
-                            ${available}
-                        </strong>
-                    </div>
+            }
+        ).join("");
 
-                    <div class="location-info">
-                        <span>Occupied</span>
-                        <strong
-                            class="occupied-text"
-                            data-occupied
-                        >
-                            ${occupied}
-                        </strong>
-                    </div>
-
-                    <div class="location-info">
-                        <span>Reserved</span>
-                        <strong
-                            class="reserved-text"
-                            data-reserved
-                        >
-                            ${reserved}
-                        </strong>
-                    </div>
-
-                </div>
-
-            `;
-
-        }).join("");
 }
 
 
-/* =========================================================
-   UPDATE LOCATION COUNTERS ONLY
-   ========================================================= */
+/* =====================================================
+   UPDATE LOCATION COUNTERS
+===================================================== */
 
 function updateLocationCounters() {
 
-    allLocations.forEach(location => {
 
-        const card =
-            document.querySelector(
-                `[data-location-card="${CSS.escape(location.id)}"]`
-            );
+    allLocations.forEach(
+        location => {
 
 
-        if (!card) {
-            return;
-        }
+            const card =
 
-
-        const locationSlots =
-            allSlots.filter(
-                slot =>
-                    slot.locationId ===
-                    location.id
-            );
-
-
-        let available = 0;
-        let occupied = 0;
-        let reserved = 0;
-
-
-        locationSlots.forEach(slot => {
-
-            const status =
-                getStatusLabel(
-                    slot.statusCode,
-                    slot.status
+                document.querySelector(
+                    `[data-location-card="${CSS.escape(location.id)}"]`
                 );
 
 
-            if (status === "AVAILABLE") {
-                available++;
+            if (!card) {
+
+                return;
+
             }
 
-            if (status === "OCCUPIED") {
-                occupied++;
+
+            const locationSlots =
+
+                allSlots.filter(
+                    slot => {
+
+
+                        const
+                        slotLocation =
+
+                            findLocationForSlot(
+                                slot
+                            );
+
+
+                        return (
+
+                            slotLocation &&
+
+                            slotLocation.id ===
+                            location.id
+
+                        );
+
+                    }
+                );
+
+
+            let available = 0;
+
+            let occupied = 0;
+
+            let reserved = 0;
+
+
+            locationSlots.forEach(
+                slot => {
+
+
+                    const status =
+
+                        getStatusLabel(
+                            slot.statusCode,
+                            slot.status
+                        );
+
+
+                    if (
+                        status ===
+                        "AVAILABLE"
+                    ) {
+
+                        available++;
+
+                    }
+
+
+                    if (
+                        status ===
+                        "OCCUPIED"
+                    ) {
+
+                        occupied++;
+
+                    }
+
+
+                    if (
+                        status ===
+                        "RESERVED"
+                    ) {
+
+                        reserved++;
+
+                    }
+
+                }
+            );
+
+
+            const totalElement =
+
+                card.querySelector(
+                    "[data-total]"
+                );
+
+
+            const availableElement =
+
+                card.querySelector(
+                    "[data-available]"
+                );
+
+
+            const occupiedElement =
+
+                card.querySelector(
+                    "[data-occupied]"
+                );
+
+
+            const reservedElement =
+
+                card.querySelector(
+                    "[data-reserved]"
+                );
+
+
+            if (totalElement) {
+
+                totalElement.textContent =
+                    locationSlots.length;
+
             }
 
-            if (status === "RESERVED") {
-                reserved++;
+
+            if (availableElement) {
+
+                availableElement.textContent =
+                    available;
+
             }
 
-        });
+
+            if (occupiedElement) {
+
+                occupiedElement.textContent =
+                    occupied;
+
+            }
 
 
-        const totalElement =
-            card.querySelector(
-                "[data-total]"
-            );
+            if (reservedElement) {
 
-        const availableElement =
-            card.querySelector(
-                "[data-available]"
-            );
+                reservedElement.textContent =
+                    reserved;
 
-        const occupiedElement =
-            card.querySelector(
-                "[data-occupied]"
-            );
+            }
 
-        const reservedElement =
-            card.querySelector(
-                "[data-reserved]"
-            );
-
-
-        if (totalElement) {
-            totalElement.textContent =
-                locationSlots.length;
         }
+    );
 
-        if (availableElement) {
-            availableElement.textContent =
-                available;
-        }
-
-        if (occupiedElement) {
-            occupiedElement.textContent =
-                occupied;
-        }
-
-        if (reservedElement) {
-            reservedElement.textContent =
-                reserved;
-        }
-
-    });
 }
 
 
-/* =========================================================
-   POPULATE LOCATION FILTER
-   ========================================================= */
+/* =====================================================
+   LOCATION FILTER
+===================================================== */
 
 function populateLocationFilter() {
 
+
     const select =
+
         document.getElementById(
             "locationFilter"
         );
@@ -1295,38 +2324,43 @@ function populateLocationFilter() {
         select.value;
 
 
-    select.innerHTML =
-        `<option value="ALL">All Locations</option>`;
+    select.innerHTML = `
+
+        <option value="ALL">
+            All Locations
+        </option>
+
+    `;
 
 
-    allLocations.forEach(location => {
-
-        const option =
-            document.createElement("option");
+    allLocations.forEach(
+        location => {
 
 
-        /*
-         * IMPORTANT:
-         * VALUE = Airtable location RECORD ID
-         * TEXT  = location name
-         */
-        option.value =
-            location.id;
+            const option =
+                document.createElement(
+                    "option"
+                );
 
 
-        option.textContent =
-            location.name;
+            option.value =
+                location.id;
 
 
-        select.appendChild(option);
+            option.textContent =
+                location.name;
 
-    });
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
 
 
-    /*
-     * Preserve current selection.
-     */
     const stillExists =
+
         Array.from(
             select.options
         ).some(
@@ -1337,106 +2371,156 @@ function populateLocationFilter() {
 
 
     if (stillExists) {
+
         select.value =
             currentValue;
-    } else {
+
+    }
+
+    else {
+
         select.value =
             "ALL";
+
     }
+
 }
 
 
-/* =========================================================
-   DISPLAY SLOTS
-   ========================================================= */
+/* =====================================================
+   DISPLAY PARKING SLOTS
+===================================================== */
 
-function displaySlots(slots) {
+function displaySlots(
+    slots
+) {
+
 
     const tbody =
+
         document.getElementById(
             "slotsTableBody"
         );
 
 
-    if (!slots || slots.length === 0) {
+    if (
+        !slots ||
+        slots.length === 0
+    ) {
+
 
         tbody.innerHTML = `
+
             <tr>
-                <td colspan="7" class="no-data">
+
+                <td
+                    colspan="7"
+                    class="no-data">
+
                     No parking slots found.
+
                 </td>
+
             </tr>
+
         `;
 
+
         return;
+
     }
 
 
-    /*
-     * Sort by location name,
-     * then slot number.
-     */
     const sortedSlots =
+
         [...slots].sort(
             (a, b) => {
 
+
                 const locationA =
+
                     getLocationName(
                         a.locationId
-                    ).toLowerCase();
+                    )
+                    .toLowerCase();
+
 
                 const locationB =
+
                     getLocationName(
                         b.locationId
-                    ).toLowerCase();
+                    )
+                    .toLowerCase();
 
 
                 if (
                     locationA <
                     locationB
                 ) {
+
                     return -1;
+
                 }
+
 
                 if (
                     locationA >
                     locationB
                 ) {
+
                     return 1;
+
                 }
 
 
-                return Number(
-                    a.slotNumber || 0
-                ) -
-                Number(
-                    b.slotNumber || 0
+                return (
+
+                    Number(
+                        a.slotNumber || 0
+                    ) -
+
+                    Number(
+                        b.slotNumber || 0
+                    )
+
                 );
+
             }
         );
 
 
     tbody.innerHTML =
-        sortedSlots.map(
-            slot =>
-                createRowHTML(slot)
-        ).join("");
+
+        sortedSlots
+            .map(
+                slot =>
+                    createRowHTML(
+                        slot
+                    )
+            )
+            .join("");
+
 }
 
 
-/* =========================================================
-   CREATE ROW HTML
-   ========================================================= */
+/* =====================================================
+   CREATE SLOT ROW
+===================================================== */
 
-function createRowHTML(slot) {
+function createRowHTML(
+    slot
+) {
+
 
     const locationName =
+
         getLocationName(
             slot.locationId
         );
 
 
     const status =
+
         getStatusLabel(
             slot.statusCode,
             slot.status
@@ -1447,19 +2531,34 @@ function createRowHTML(slot) {
         "status";
 
 
-    if (status === "AVAILABLE") {
+    if (
+        status ===
+        "AVAILABLE"
+    ) {
+
         statusClass +=
             " status-available";
+
     }
 
-    else if (status === "OCCUPIED") {
+    else if (
+        status ===
+        "OCCUPIED"
+    ) {
+
         statusClass +=
             " status-occupied";
+
     }
 
-    else if (status === "RESERVED") {
+    else if (
+        status ===
+        "RESERVED"
+    ) {
+
         statusClass +=
             " status-reserved";
+
     }
 
 
@@ -1467,309 +2566,343 @@ function createRowHTML(slot) {
         "—";
 
 
-    /*
-     * Vehicle number should only be
-     * displayed when slot is OCCUPIED.
-     */
     if (
-        status === "OCCUPIED" &&
+
+        status ===
+        "OCCUPIED" &&
+
         String(
-            slot.vehicleNumber || ""
+            slot.vehicleNumber ||
+            ""
         ).trim() !== ""
+
     ) {
 
-        vehicleHTML =
-            `<span class="vehicle-number">
+
+        vehicleHTML = `
+
+            <span class="vehicle-number">
+
                 ${escapeHTML(
-                    String(
-                        slot.vehicleNumber
-                    )
+                    slot.vehicleNumber
                 )}
-            </span>`;
+
+            </span>
+
+        `;
+
     }
 
 
     return `
 
-        <tr id="row-${escapeHTML(slot.id)}">
+        <tr>
 
             <td>
+
                 <strong>
-                    ${escapeHTML(locationName)}
+
+                    ${escapeHTML(
+                        locationName
+                    )}
+
                 </strong>
+
             </td>
 
-            <td>
-                Slot ${escapeHTML(
-                    String(
-                        slot.slotNumber || "-"
-                    )
-                )}
-            </td>
 
             <td>
+
+                Slot
                 ${escapeHTML(
                     String(
-                        slot.sensorId || "-"
+                        slot.slotNumber ||
+                        "-"
                     )
                 )}
+
             </td>
 
+
             <td>
-                <span class="${statusClass}">
-                    ${escapeHTML(status)}
+
+                ${escapeHTML(
+                    String(
+                        slot.sensorId ||
+                        "-"
+                    )
+                )}
+
+            </td>
+
+
+            <td>
+
+                <span
+                    class="${statusClass}">
+
+                    ${escapeHTML(
+                        status
+                    )}
+
                 </span>
+
             </td>
 
+
             <td>
+
                 ${escapeHTML(
                     String(
-                        slot.statusCode ?? "-"
+                        slot.statusCode ??
+                        "-"
                     )
                 )}
+
             </td>
 
+
             <td>
+
                 ${vehicleHTML}
+
             </td>
 
+
             <td>
-                ${escapeHTML(slot.id)}
+
+                ${escapeHTML(
+                    slot.id
+                )}
+
             </td>
 
         </tr>
 
     `;
-}
-
-
-/* =========================================================
-   UPDATE ONLY CHANGED ROWS
-   ========================================================= */
-
-function updateSlotRowsOnly(
-    oldSlots,
-    newSlots
-) {
-
-    const oldMap =
-        new Map(
-            oldSlots.map(
-                slot =>
-                    [slot.id, slot]
-            )
-        );
-
-
-    const newMap =
-        new Map(
-            newSlots.map(
-                slot =>
-                    [slot.id, slot]
-            )
-        );
-
-
-    /*
-     * Update or create changed rows.
-     */
-    newSlots.forEach(slot => {
-
-        const oldSlot =
-            oldMap.get(slot.id);
-
-
-        if (
-            !oldSlot ||
-            JSON.stringify(oldSlot) !==
-            JSON.stringify(slot)
-        ) {
-
-            const row =
-                document.getElementById(
-                    `row-${slot.id}`
-                );
-
-
-            if (row) {
-
-                row.outerHTML =
-                    createRowHTML(slot);
-
-            }
-
-        }
-
-    });
-
-
-    /*
-     * Remove deleted records.
-     */
-    oldSlots.forEach(slot => {
-
-        if (!newMap.has(slot.id)) {
-
-            const row =
-                document.getElementById(
-                    `row-${slot.id}`
-                );
-
-
-            if (row) {
-                row.remove();
-            }
-
-        }
-
-    });
 
 }
 
 
-/* =========================================================
-   FILTER SLOTS
-   ========================================================= */
+/* =====================================================
+   PARKING FILTER
+===================================================== */
 
 function filterSlots() {
 
-    displayFilteredRows(true);
+    displayFilteredRows();
 
 }
 
 
-/* =========================================================
-   DISPLAY FILTERED ROWS
-   ========================================================= */
+/* =====================================================
+   DISPLAY FILTERED PARKING SLOTS
+===================================================== */
 
-function displayFilteredRows(
-    rebuild = true
-) {
+function displayFilteredRows() {
+
 
     const searchText =
+
         document.getElementById(
             "slotSearch"
-        ).value
+        )
+        .value
         .toLowerCase()
         .trim();
 
 
     const selectedLocation =
+
         document.getElementById(
             "locationFilter"
         ).value;
 
 
     const selectedStatus =
+
         document.getElementById(
             "statusFilter"
         ).value;
 
 
+    const selectedLocationObject =
+
+        selectedLocation === "ALL"
+
+            ? null
+
+            : allLocations.find(
+                location =>
+                    String(
+                        location.id
+                    ).trim() ===
+
+                    String(
+                        selectedLocation
+                    ).trim()
+            );
+
+
     const filteredSlots =
-        allSlots.filter(slot => {
+
+        allSlots.filter(
+            slot => {
 
 
-            /*
-             * IMPORTANT:
-             * selectedLocation is a LOCATION RECORD ID.
-             */
-            const locationMatch =
-                selectedLocation === "ALL" ||
-                String(
-                    slot.locationId
-                ) === String(
-                    selectedLocation
-                );
+                const slotLocation =
+
+                    findLocationForSlot(
+                        slot
+                    );
 
 
-            const status =
-                getStatusLabel(
-                    slot.statusCode,
-                    slot.status
-                );
+                let locationMatch =
+                    true;
 
 
-            const statusMatch =
-                selectedStatus === "ALL" ||
-                status === selectedStatus;
+                if (
+                    selectedLocation !==
+                    "ALL"
+                ) {
 
 
-            const locationName =
-                getLocationName(
-                    slot.locationId
-                );
+                    if (
+                        !selectedLocationObject ||
+                        !slotLocation
+                    ) {
+
+                        locationMatch =
+                            false;
+
+                    }
+
+                    else {
+
+                        locationMatch =
+
+                            String(
+                                slotLocation.id
+                            ).trim() ===
+
+                            String(
+                                selectedLocationObject.id
+                            ).trim();
+
+                    }
+
+                }
 
 
-            const searchMatch =
-                searchText === "" ||
+                const status =
 
-                locationName
+                    getStatusLabel(
+                        slot.statusCode,
+                        slot.status
+                    );
+
+
+                const statusMatch =
+
+                    selectedStatus ===
+                        "ALL" ||
+
+                    status ===
+                        selectedStatus;
+
+
+                const locationName =
+
+                    slotLocation
+
+                        ? slotLocation.name
+
+                        : getLocationName(
+                            slot.locationId
+                        );
+
+
+                const searchMatch =
+
+                    searchText === "" ||
+
+
+                    String(
+                        locationName
+                    )
                     .toLowerCase()
                     .includes(
                         searchText
                     ) ||
 
-                String(
-                    slot.slotNumber || ""
-                )
-                .toLowerCase()
-                .includes(
-                    searchText
-                ) ||
 
-                String(
-                    slot.sensorId || ""
-                )
-                .toLowerCase()
-                .includes(
-                    searchText
-                ) ||
+                    String(
+                        slot.slotNumber ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(
+                        searchText
+                    ) ||
 
-                String(
-                    slot.vehicleNumber || ""
-                )
-                .toLowerCase()
-                .includes(
-                    searchText
-                ) ||
 
-                String(
-                    slot.id || ""
-                )
-                .toLowerCase()
-                .includes(
-                    searchText
+                    String(
+                        slot.sensorId ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(
+                        searchText
+                    ) ||
+
+
+                    String(
+                        slot.vehicleNumber ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(
+                        searchText
+                    ) ||
+
+
+                    String(
+                        slot.id ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(
+                        searchText
+                    );
+
+
+                return (
+
+                    locationMatch &&
+
+                    statusMatch &&
+
+                    searchMatch
+
                 );
 
-
-            return (
-                locationMatch &&
-                statusMatch &&
-                searchMatch
-            );
-
-        });
+            }
+        );
 
 
-    /*
-     * When user changes a filter,
-     * rebuild the visible table.
-     *
-     * During background refresh, this
-     * also ensures the selected filter
-     * remains correct.
-     */
-    displaySlots(filteredSlots);
+    displaySlots(
+        filteredSlots
+    );
 
 }
 
 
-/* =========================================================
-   CLEAR FILTERS
-   ========================================================= */
+/* =====================================================
+   CLEAR PARKING FILTERS
+===================================================== */
 
 function clearFilters() {
+
 
     document.getElementById(
         "slotSearch"
@@ -1778,92 +2911,584 @@ function clearFilters() {
 
     document.getElementById(
         "locationFilter"
-    ).value = "ALL";
+    ).value =
+        "ALL";
 
 
     document.getElementById(
         "statusFilter"
-    ).value = "ALL";
+    ).value =
+        "ALL";
 
 
-    displayFilteredRows(true);
+    displayFilteredRows();
+
 }
 
 
-/* =========================================================
-   ESCAPE HTML
-   ========================================================= */
+/* =====================================================
+   FETCH USERS
+===================================================== */
 
-function escapeHTML(value) {
+async function fetchUsers() {
+
+
+    try {
+
+
+        const records =
+
+            await fetchAllRecords(
+                USERS_TABLE
+            );
+
+
+        allUsers =
+
+            records.map(
+                record => {
+
+
+                    const f =
+                        record.fields || {};
+
+
+                    return {
+
+
+                        id:
+                            record.id,
+
+
+                        name:
+
+                            f.Name ||
+                            f.name ||
+                            "",
+
+
+                        email:
+
+                            f.Email ||
+                            f.email ||
+                            "",
+
+
+                        phone:
+
+                            f.Phone ||
+                            f.phone ||
+                            "",
+
+
+                        vehicleModel:
+
+                            f.VehicleModel ||
+                            f.vehicleModel ||
+                            "",
+
+
+                        vehicleNumber:
+
+                            f.VehicleNumber ||
+                            f.vehicleNumber ||
+                            "",
+
+
+                        role:
+
+                            String(
+
+                                f.Role ||
+                                f.role ||
+                                "user"
+
+                            )
+                            .toLowerCase()
+                            .trim(),
+
+
+                        passwordSet:
+
+                            String(
+
+                                f.Password ||
+                                f.password ||
+                                ""
+
+                            ).trim() !== ""
+
+                    };
+
+                }
+            );
+
+
+        displayUsers();
+
+
+    }
+
+    catch (error) {
+
+
+        console.error(
+            "Error loading users:",
+            error
+        );
+
+
+        document.getElementById(
+            "usersTableBody"
+        ).innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    class="no-data">
+
+                    Unable to load users.
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+/* =====================================================
+   DISPLAY USERS
+===================================================== */
+
+function displayUsers(
+    users = allUsers
+) {
+
+
+    const tbody =
+
+        document.getElementById(
+            "usersTableBody"
+        );
+
+
+    if (
+        !users ||
+        users.length === 0
+    ) {
+
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    class="no-data">
+
+                    No registered users found.
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    tbody.innerHTML =
+
+        users.map(
+            user => {
+
+
+                const roleClass =
+
+                    user.role ===
+                    "admin"
+
+                        ? "status-reserved"
+
+                        : "status-available";
+
+
+                const passwordStatus =
+
+                    user.passwordSet
+
+                        ? `
+
+                            <span
+                                class="password-set">
+
+                                ✓ Password Set
+
+                            </span>
+
+                          `
+
+                        : `
+
+                            <span
+                                class="status status-occupied">
+
+                                ✕ Not Set
+
+                            </span>
+
+                          `;
+
+
+                return `
+
+                    <tr>
+
+
+                        <td>
+
+                            <strong>
+
+                                ${escapeHTML(
+                                    user.name ||
+                                    "-"
+                                )}
+
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            ${escapeHTML(
+                                user.email ||
+                                "-"
+                            )}
+
+                        </td>
+
+
+                        <td>
+
+                            ${escapeHTML(
+                                user.phone ||
+                                "-"
+                            )}
+
+                        </td>
+
+
+                        <td>
+
+                            ${escapeHTML(
+                                user.vehicleModel ||
+                                "-"
+                            )}
+
+                        </td>
+
+
+                        <td>
+
+                            ${escapeHTML(
+                                user.vehicleNumber ||
+                                "-"
+                            )}
+
+                        </td>
+
+
+                        <td>
+
+                            <span
+                                class="status ${roleClass}">
+
+                                ${escapeHTML(
+                                    user.role
+                                )}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            ${passwordStatus}
+
+                        </td>
+
+
+                    </tr>
+
+                `;
+
+            }
+        ).join("");
+
+}
+
+
+/* =====================================================
+   USER SEARCH
+===================================================== */
+
+function filterUsers() {
+
+
+    const search =
+
+        document.getElementById(
+            "userSearch"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    if (
+        search === ""
+    ) {
+
+        displayUsers(
+            allUsers
+        );
+
+        return;
+
+    }
+
+
+    const filtered =
+
+        allUsers.filter(
+            user => {
+
+
+                return (
+
+
+                    String(
+                        user.name ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(
+                        search
+                    )
+
+
+                    ||
+
+
+                    String(
+                        user.email ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(
+                        search
+                    )
+
+
+                    ||
+
+
+                    String(
+                        user.phone ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(
+                        search
+                    )
+
+
+                    ||
+
+
+                    String(
+                        user.vehicleModel ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(
+                        search
+                    )
+
+
+                    ||
+
+
+                    String(
+                        user.vehicleNumber ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(
+                        search
+                    )
+
+
+                    ||
+
+
+                    String(
+                        user.role ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(
+                        search
+                    )
+
+                );
+
+            }
+        );
+
+
+    displayUsers(
+        filtered
+    );
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHTML(
+    value
+) {
+
 
     return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
 }
 
 
-/* =========================================================
+/* =====================================================
    MANUAL REFRESH
-   ========================================================= */
+===================================================== */
 
 function manualRefresh() {
 
+
     loadAdminData(true);
+
+    fetchUsers();
 
 }
 
 
-/* =========================================================
+/* =====================================================
    LOGOUT
-   ========================================================= */
+===================================================== */
 
 function logoutAdmin() {
+
 
     localStorage.removeItem(
         "currentUser"
     );
 
+
     window.location.href =
         "login.html";
+
 }
 
 
-/* =========================================================
-   START ADMIN DASHBOARD
-   ========================================================= */
+/* =====================================================
+   START DASHBOARD
+===================================================== */
 
-window.onload = function () {
-
-    if (!checkAdmin()) {
-        return;
-    }
+window.onload =
+    function () {
 
 
-    /*
-     * First load.
-     */
-    loadAdminData(true);
+        if (
+            !checkAdmin()
+        ) {
+
+            return;
+
+        }
 
 
-    /*
-     * Background refresh every 2 seconds.
-     *
-     * Existing data remains visible.
-     */
-    refreshTimer =
-        setInterval(
-            function () {
-                loadAdminData(false);
-            },
-            2000
+        loadAdminData(
+            true
         );
 
-};
+
+        fetchUsers();
+
+
+        /*
+         * Refresh parking data
+         * and user data every 2 seconds.
+         */
+
+        refreshTimer =
+
+            setInterval(
+                function () {
+
+
+                    loadAdminData(
+                        false
+                    );
+
+
+                    fetchUsers();
+
+
+                },
+                2000
+            );
+
+    };
+
 
 </script>
 
+
 </body>
+
 </html>
