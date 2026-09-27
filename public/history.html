@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking History</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <h1>Booking History</h1>
+    <div>
+      <button onclick="window.location.href='dashboard.html'">Dashboard</button>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <h2 class="center">Booking History</h2>
+
+  <div class="history-container">
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>Date & Time</th>
+          <th>Slot</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="historyBody">
+        <tr class="history-empty">
+          <td colspan="3">Loading booking history…</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script type="module" src="script.js"></script>
+  <script type="module" src="auth.js"></script>
+  <script type="module">
+    window.addEventListener('DOMContentLoaded', () => {
+      if (typeof loadBookingHistory === 'function') {
+        loadBookingHistory();
+      }
+    });
+  </script>
+</body>
+</html>
+  <script>
+    // Check if user is logged in
+    if (!localStorage.getItem("currentUser")) {
+      window.location.href = "login.html";
+    }
+  </script>

@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Parking Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #222;
+        }
+
+        .header {
+            background: #111827;
+            color: white;
+            padding: 18px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-badge {
+            background: #2563eb;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .logout-btn,
+        .refresh-btn {
+            border: none;
+            padding: 9px 15px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .refresh-btn {
+            background: #2563eb;
+            color: white;
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: 25px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 23px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .stat-title {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .stat-number {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .locations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 15px;
+        }
+
+        .location-card {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .location-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .location-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+
+        .available-text {
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .occupied-text {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .reserved-text {
+            color: #d97706;
+            font-weight: bold;
+        }
+
+        .filter-box {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            margin-bottom: 15px;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 12px;
+        }
+
+        .filters input,
+        .filters select {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            background: white;
+            font-size: 14px;
+        }
+
+        .clear-btn {
+            border: none;
+            padding: 11px 18px;
+            border-radius: 7px;
+            background: #6b7280;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        th {
+            background: #1f2937;
+            color: white;
+            padding: 13px;
+            text-align: left;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 13px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-available {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-occupied {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-reserved {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .vehicle-number {
+            font-weight: bold;
+            color: #1d4ed8;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+
+        .sync-bar {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .sync-ok {
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .sync-error {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        @media (max-width: 900px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+
+    <h1>🅿️ Admin Parking Dashboard</h1>
+
+    <div class="header-right">
+
+        <span class="admin-badge">ADMIN</span>
+
+        <button class="refresh-btn" onclick="manualRefresh()">
+            🔄 Refresh
+        </button>
+
+        <button class="logout-btn" onclick="logoutAdmin()">
+            Logout
+        </button>
+
+    </div>
+
+</div>
+
+
+<div class="container">
+
+    <!-- STATISTICS -->
+
+    <div class="stats">
+
+        <div class="stat-card">
+            <div class="stat-title">Total Locations</div>
+            <div class="stat-number" id="totalLocations">0</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">Total Slots</div>
+            <div class="stat-number" id="totalSlots">0</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">Available Slots</div>
+            <div class="stat-number available-text" id="availableSlots">
+                0
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">Occupied Slots</div>
+            <div class="stat-number occupied-text" id="occupiedSlots">
+                0
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- LOCATION SUMMARY -->
+
+    <h2 class="section-title">📍 Parking Locations</h2>
+
+    <div id="locationsContainer" class="locations-grid">
+
+        <div class="no-data">
+            Loading locations...
+        </div>
+
+    </div>
+
+
+    <!-- PARKING SLOTS -->
+
+    <h2 class="section-title">🅿️ All Parking Slot Details</h2>
+
+    <div class="filter-box">
+
+        <div class="filters">
+
+            <input
+                type="text"
+                id="slotSearch"
+                placeholder="🔍 Search location, slot, sensor, vehicle..."
+                oninput="filterSlots()"
+            >
+
+            <select id="locationFilter" onchange="filterSlots()">
+
+                <option value="ALL">
+                    All Locations
+                </option>
+
+            </select>
+
+            <select id="statusFilter" onchange="filterSlots()">
+
+                <option value="ALL">
+                    All Status
+                </option>
+
+                <option value="OCCUPIED">
+                    Occupied
+                </option>
+
+                <option value="AVAILABLE">
+                    Available
+                </option>
+
+                <option value="RESERVED">
+                    Reserved
+                </option>
+
+            </select>
+
+            <button class="clear-btn" onclick="clearFilters()">
+                Clear
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Location</th>
+                    <th>Slot</th>
+                    <th>Sensor</th>
+                    <th>Status</th>
+                    <th>Status Code</th>
+                    <th>Vehicle Number</th>
+                    <th>Record ID</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="slotsTableBody">
+
+                <tr>
+
+                    <td colspan="7" class="no-data">
+                        Loading parking slots...
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <div class="sync-bar">
+
+        <div>
+            Last updated:
+            <strong id="lastUpdated">--</strong>
+        </div>
+
+        <div id="syncStatus" class="sync-ok">
+            ● Connected
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   AIRTABLE CONFIGURATION
+   ========================================================= */
+
+const AIRTABLE_API_KEY =
+    "patonNHFlI2tk3iRS.c1d7c5f15942e5717c1d3fd3d7c13213c4a762e4dd57dd655e44cba3130581bb";
+
+const AIRTABLE_BASE_ID =
+    "appWhAZEQegXTWIjR";
+
+const LOCATIONS_TABLE =
+    "tblIPvP8uLqzwoIUC";
+
+const SLOTS_TABLE =
+    "ParkingSlots";
+
+
+/* =========================================================
+   GLOBAL DATA
+   ========================================================= */
+
+let allLocations = [];
+let allSlots = [];
+
+let firstLoad = true;
+let refreshInProgress = false;
+let refreshTimer = null;
+
+
+/* =========================================================
+   ADMIN CHECK
+   ========================================================= */
+
+function checkAdmin() {
+
+    const currentUser =
+        JSON.parse(
+            localStorage.getItem("currentUser") || "null"
+        );
+
+    if (!currentUser) {
+        window.location.href = "login.html";
+        return false;
+    }
+
+    const role =
+        String(currentUser.role || "user")
+            .toLowerCase()
+            .trim();
+
+    if (role !== "admin") {
+
+        alert("Admin access required.");
+
+        window.location.href = "dashboard.html";
+
+        return false;
+    }
+
+    return true;
+}
+
+
+/* =========================================================
+   AIRTABLE REQUEST
+   ========================================================= */
+
+async function fetchAllRecords(tableName) {
+
+    let records = [];
+    let offset = null;
+
+    do {
+
+        let url =
+            `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(tableName)}?pageSize=100`;
+
+        if (offset) {
+            url += `&offset=${encodeURIComponent(offset)}`;
+        }
+
+        const response =
+            await fetch(url, {
+
+                headers: {
+                    Authorization:
+                        `Bearer ${AIRTABLE_API_KEY}`
+                }
+
+            });
+
+        if (!response.ok) {
+
+            throw new Error(
+                `Airtable error ${response.status}`
+            );
+        }
+
+        const data =
+            await response.json();
+
+        if (data.records) {
+            records =
+                records.concat(data.records);
+        }
+
+        offset =
+            data.offset || null;
+
+    } while (offset);
+
+    return records;
+}
+
+
+/* =========================================================
+   NORMALIZE LINKED AIRTABLE VALUE
+   ========================================================= */
+
+function normalizeLinkedValue(value) {
+
+    if (Array.isArray(value)) {
+
+        if (value.length === 0) {
+            return "";
+        }
+
+        const first = value[0];
+
+        if (
+            typeof first === "object" &&
+            first !== null
+        ) {
+
+            return String(
+                first.id ||
+                first.name ||
+                ""
+            ).trim();
+
+        }
+
+        return String(first).trim();
+    }
+
+
+    if (
+        typeof value === "object" &&
+        value !== null
+    ) {
+
+        return String(
+            value.id ||
+            value.name ||
+            ""
+        ).trim();
+    }
+
+
+    return String(value || "").trim();
+}
+
+
+/* =========================================================
+   NORMALIZE LOCATIONS
+   ========================================================= */
+
+function normalizeLocations(records) {
+
+    return records.map(record => {
+
+        const f =
+            record.fields || {};
+
+        return {
+
+            id:
+                String(record.id || "").trim(),
+
+            name:
+                String(
+                    f.name ||
+                    f.Name ||
+                    f.locationName ||
+                    f.LocationName ||
+                    "Unknown Location"
+                ).trim(),
+
+            address:
+                f.address ||
+                f.Address ||
+                "",
+
+            totalSlots:
+                Number(
+                    f.totalSlots ||
+                    f.TotalSlots ||
+                    0
+                ),
+
+            city:
+                f.city ||
+                f.City ||
+                "",
+
+            phone:
+                f.phone ||
+                f.Phone ||
+                "",
+
+            ratePerHour:
+                f.ratePerHour ||
+                f.RatePerHour ||
+                "",
+
+            openTime:
+                f.openTime ||
+                f.OpenTime ||
+                "",
+
+            closeTime:
+                f.closeTime ||
+                f.CloseTime ||
+                ""
+
+        };
+
+    });
+}
+
+
+/* =========================================================
+   NORMALIZE SLOTS
+   ========================================================= */
+
+function normalizeSlots(records) {
+
+    return records.map(record => {
+
+        const f =
+            record.fields || {};
+
+        return {
+
+            id:
+                String(record.id || "").trim(),
+
+            locationId:
+                normalizeLinkedValue(
+                    f.locationId ??
+                    f.LocationId ??
+                    f.location ??
+                    f.Location
+                ),
+
+            slotNumber:
+                f.slotNumber ??
+                f.SlotNumber ??
+                "",
+
+            statusCode:
+                f.statusCode ??
+                f.StatusCode ??
+                "",
+
+            status:
+                String(
+                    f.status ||
+                    f.Status ||
+                    ""
+                )
+                .toUpperCase()
+                .trim(),
+
+            sensorId:
+                f.sensorId ||
+                f.SensorId ||
+                "",
+
+            vehicleNumber:
+                f.vehicleNumber ||
+                f.VehicleNumber ||
+                ""
+
+        };
+
+    });
+}
+
+
+/* =========================================================
+   GET LOCATION BY SLOT LOCATION VALUE
+   ========================================================= */
+
+function findLocationForSlot(slot) {
+
+    const value =
+        String(
+            slot.locationId || ""
+        )
+        .trim()
+        .toLowerCase();
+
+    if (!value) {
+        return null;
+    }
+
+    return allLocations.find(location => {
+
+        const locationId =
+            String(location.id || "")
+                .trim()
+                .toLowerCase();
+
+        const locationName =
+            String(location.name || "")
+                .trim()
+                .toLowerCase();
+
+        return (
+            value === locationId ||
+            value === locationName
+        );
+
+    }) || null;
+}
+
+
+/* =========================================================
+   GET LOCATION NAME
+   ========================================================= */
+
+function getLocationName(locationId) {
+
+    const value =
+        String(locationId || "")
+            .trim()
+            .toLowerCase();
+
+    if (!value) {
+        return "Unknown Location";
+    }
+
+    const location =
+        allLocations.find(item => {
+
+            const id =
+                String(item.id || "")
+                    .trim()
+                    .toLowerCase();
+
+            const name =
+                String(item.name || "")
+                    .trim()
+                    .toLowerCase();
+
+            return (
+                value === id ||
+                value === name
+            );
+
+        });
+
+    return location
+        ? location.name
+        : "Unknown Location";
+}
+
+
+/* =========================================================
+   STATUS LABEL
+   ========================================================= */
+
+function getStatusLabel(
+    statusCode,
+    status
+) {
+
+    const cleanStatus =
+        String(status || "")
+            .toUpperCase()
+            .trim();
+
+    if (cleanStatus === "OCCUPIED") {
+        return "OCCUPIED";
+    }
+
+    if (cleanStatus === "AVAILABLE") {
+        return "AVAILABLE";
+    }
+
+    if (cleanStatus === "RESERVED") {
+        return "RESERVED";
+    }
+
+    if (Number(statusCode) === 0) {
+        return "OCCUPIED";
+    }
+
+    if (Number(statusCode) === 1) {
+        return "AVAILABLE";
+    }
+
+    if (Number(statusCode) === 2) {
+        return "RESERVED";
+    }
+
+    return "UNKNOWN";
+}
+
+
+/* =========================================================
+   LOAD ADMIN DATA
+   ========================================================= */
+
+async function loadAdminData(manual = false) {
+
+    if (refreshInProgress) {
+        return;
+    }
+
+    refreshInProgress = true;
+
+    const syncStatus =
+        document.getElementById("syncStatus");
+
+    if (manual) {
+
+        syncStatus.textContent =
+            "● Refreshing...";
+
+        syncStatus.className = "";
+
+    }
+
+    try {
+
+        const results =
+            await Promise.all([
+
+                fetchAllRecords(
+                    LOCATIONS_TABLE
+                ),
+
+                fetchAllRecords(
+                    SLOTS_TABLE
+                )
+
+            ]);
+
+
+        const newLocations =
+            normalizeLocations(
+                results[0]
+            );
+
+        const newSlots =
+            normalizeSlots(
+                results[1]
+            );
+
+
+        if (firstLoad) {
+
+            allLocations =
+                newLocations;
+
+            allSlots =
+                newSlots;
+
+            updateFullDashboard();
+
+            firstLoad = false;
+
+        } else {
+
+            updateChangedData(
+                newLocations,
+                newSlots
+            );
+
+        }
+
+
+        document.getElementById(
+            "lastUpdated"
+        ).textContent =
+            new Date().toLocaleTimeString();
+
+
+        syncStatus.textContent =
+            "● Connected";
+
+        syncStatus.className =
+            "sync-ok";
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Admin dashboard error:",
+            error
+        );
+
+        syncStatus.textContent =
+            "● Sync error";
+
+        syncStatus.className =
+            "sync-error";
+
+    }
+
+    finally {
+
+        refreshInProgress = false;
+
+    }
+}
+
+
+/* =========================================================
+   UPDATE FULL DASHBOARD
+   ========================================================= */
+
+function updateFullDashboard() {
+
+    updateStatistics();
+
+    displayLocations();
+
+    populateLocationFilter();
+
+    displayFilteredRows();
+
+}
+
+
+/* =========================================================
+   UPDATE CHANGED DATA
+   ========================================================= */
+
+function updateChangedData(
+    newLocations,
+    newSlots
+) {
+
+    const locationsChanged =
+        JSON.stringify(allLocations) !==
+        JSON.stringify(newLocations);
+
+    const slotsChanged =
+        JSON.stringify(allSlots) !==
+        JSON.stringify(newSlots);
+
+
+    if (locationsChanged) {
+
+        allLocations =
+            newLocations;
+
+        populateLocationFilter();
+
+        displayLocations();
+
+    }
+
+
+    if (slotsChanged) {
+
+        allSlots =
+            newSlots;
+
+        updateStatistics();
+
+        updateLocationCounters();
+
+        /*
+         * Re-apply current filters.
+         * The selected location and status
+         * are never reset.
+         */
+        displayFilteredRows();
+
+    }
+
+}
+
+
+/* =========================================================
+   STATISTICS
+   ========================================================= */
+
+function updateStatistics() {
+
+    document.getElementById(
+        "totalLocations"
+    ).textContent =
+        allLocations.length;
+
+
+    document.getElementById(
+        "totalSlots"
+    ).textContent =
+        allSlots.length;
+
+
+    let available = 0;
+    let occupied = 0;
+
+
+    allSlots.forEach(slot => {
+
+        const status =
+            getStatusLabel(
+                slot.statusCode,
+                slot.status
+            );
+
+        if (status === "AVAILABLE") {
+            available++;
+        }
+
+        if (status === "OCCUPIED") {
+            occupied++;
+        }
+
+    });
+
+
+    document.getElementById(
+        "availableSlots"
+    ).textContent =
+        available;
+
+
+    document.getElementById(
+        "occupiedSlots"
+    ).textContent =
+        occupied;
+}
+
+
+/* =========================================================
+   DISPLAY LOCATIONS
+   ========================================================= */
+
+function displayLocations() {
+
+    const container =
+        document.getElementById(
+            "locationsContainer"
+        );
+
+    if (allLocations.length === 0) {
+
+        container.innerHTML = `
+            <div class="no-data">
+                No locations found.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        allLocations.map(location => {
+
+            /*
+             * IMPORTANT:
+             * Use findLocationForSlot so
+             * location ID and location name
+             * are both supported.
+             */
+
+            const locationSlots =
+                allSlots.filter(slot => {
+
+                    const slotLocation =
+                        findLocationForSlot(slot);
+
+                    return (
+                        slotLocation &&
+                        slotLocation.id ===
+                        location.id
+                    );
+
+                });
+
+
+            let available = 0;
+            let occupied = 0;
+            let reserved = 0;
+
+
+            locationSlots.forEach(slot => {
+
+                const status =
+                    getStatusLabel(
+                        slot.statusCode,
+                        slot.status
+                    );
+
+                if (status === "AVAILABLE") {
+                    available++;
+                }
+
+                if (status === "OCCUPIED") {
+                    occupied++;
+                }
+
+                if (status === "RESERVED") {
+                    reserved++;
+                }
+
+            });
+
+
+            return `
+
+                <div
+                    class="location-card"
+                    data-location-card="${escapeHTML(location.id)}"
+                >
+
+                    <div class="location-name">
+                        📍 ${escapeHTML(location.name)}
+                    </div>
+
+                    <div class="location-info">
+                        <span>Total Slots</span>
+                        <strong data-total>
+                            ${locationSlots.length}
+                        </strong>
+                    </div>
+
+                    <div class="location-info">
+                        <span>Available</span>
+
+                        <strong
+                            class="available-text"
+                            data-available
+                        >
+                            ${available}
+                        </strong>
+                    </div>
+
+                    <div class="location-info">
+                        <span>Occupied</span>
+
+                        <strong
+                            class="occupied-text"
+                            data-occupied
+                        >
+                            ${occupied}
+                        </strong>
+                    </div>
+
+                    <div class="location-info">
+                        <span>Reserved</span>
+
+                        <strong
+                            class="reserved-text"
+                            data-reserved
+                        >
+                            ${reserved}
+                        </strong>
+                    </div>
+
+                </div>
+
+            `;
+
+        }).join("");
+}
+
+
+/* =========================================================
+   UPDATE LOCATION COUNTERS
+   ========================================================= */
+
+function updateLocationCounters() {
+
+    allLocations.forEach(location => {
+
+        const card =
+            document.querySelector(
+                `[data-location-card="${CSS.escape(location.id)}"]`
+            );
+
+        if (!card) {
+            return;
+        }
+
+
+        const locationSlots =
+            allSlots.filter(slot => {
+
+                const slotLocation =
+                    findLocationForSlot(slot);
+
+                return (
+                    slotLocation &&
+                    slotLocation.id ===
+                    location.id
+                );
+
+            });
+
+
+        let available = 0;
+        let occupied = 0;
+        let reserved = 0;
+
+
+        locationSlots.forEach(slot => {
+
+            const status =
+                getStatusLabel(
+                    slot.statusCode,
+                    slot.status
+                );
+
+            if (status === "AVAILABLE") {
+                available++;
+            }
+
+            if (status === "OCCUPIED") {
+                occupied++;
+            }
+
+            if (status === "RESERVED") {
+                reserved++;
+            }
+
+        });
+
+
+        const totalElement =
+            card.querySelector(
+                "[data-total]"
+            );
+
+        const availableElement =
+            card.querySelector(
+                "[data-available]"
+            );
+
+        const occupiedElement =
+            card.querySelector(
+                "[data-occupied]"
+            );
+
+        const reservedElement =
+            card.querySelector(
+                "[data-reserved]"
+            );
+
+
+        if (totalElement) {
+            totalElement.textContent =
+                locationSlots.length;
+        }
+
+        if (availableElement) {
+            availableElement.textContent =
+                available;
+        }
+
+        if (occupiedElement) {
+            occupiedElement.textContent =
+                occupied;
+        }
+
+        if (reservedElement) {
+            reservedElement.textContent =
+                reserved;
+        }
+
+    });
+}
+
+
+/* =========================================================
+   POPULATE LOCATION FILTER
+   ========================================================= */
+
+function populateLocationFilter() {
+
+    const select =
+        document.getElementById(
+            "locationFilter"
+        );
+
+    const currentValue =
+        select.value;
+
+
+    select.innerHTML = `
+        <option value="ALL">
+            All Locations
+        </option>
+    `;
+
+
+    allLocations.forEach(location => {
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+        /*
+         * VERY IMPORTANT:
+         * Dropdown VALUE is the
+         * Airtable Location Record ID.
+         */
+
+        option.value =
+            location.id;
+
+        option.textContent =
+            location.name;
+
+        select.appendChild(option);
+
+    });
+
+
+    const stillExists =
+        Array.from(
+            select.options
+        ).some(
+            option =>
+                option.value ===
+                currentValue
+        );
+
+
+    if (stillExists) {
+
+        select.value =
+            currentValue;
+
+    } else {
+
+        select.value =
+            "ALL";
+
+    }
+}
+
+
+/* =========================================================
+   DISPLAY SLOTS
+   ========================================================= */
+
+function displaySlots(slots) {
+
+    const tbody =
+        document.getElementById(
+            "slotsTableBody"
+        );
+
+
+    if (!slots || slots.length === 0) {
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="no-data">
+                    No parking slots found.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    const sortedSlots =
+        [...slots].sort(
+            (a, b) => {
+
+                const locationA =
+                    getLocationName(
+                        a.locationId
+                    ).toLowerCase();
+
+                const locationB =
+                    getLocationName(
+                        b.locationId
+                    ).toLowerCase();
+
+
+                if (locationA < locationB) {
+                    return -1;
+                }
+
+                if (locationA > locationB) {
+                    return 1;
+                }
+
+
+                return Number(
+                    a.slotNumber || 0
+                ) -
+                Number(
+                    b.slotNumber || 0
+                );
+
+            }
+        );
+
+
+    tbody.innerHTML =
+        sortedSlots
+            .map(
+                slot =>
+                    createRowHTML(slot)
+            )
+            .join("");
+}
+
+
+/* =========================================================
+   CREATE TABLE ROW
+   ========================================================= */
+
+function createRowHTML(slot) {
+
+    const locationName =
+        getLocationName(
+            slot.locationId
+        );
+
+
+    const status =
+        getStatusLabel(
+            slot.statusCode,
+            slot.status
+        );
+
+
+    let statusClass =
+        "status";
+
+
+    if (status === "AVAILABLE") {
+
+        statusClass +=
+            " status-available";
+
+    }
+
+    else if (status === "OCCUPIED") {
+
+        statusClass +=
+            " status-occupied";
+
+    }
+
+    else if (status === "RESERVED") {
+
+        statusClass +=
+            " status-reserved";
+
+    }
+
+
+    let vehicleHTML =
+        "—";
+
+
+    /*
+     * Vehicle number only when occupied.
+     */
+
+    if (
+        status === "OCCUPIED" &&
+        String(
+            slot.vehicleNumber || ""
+        ).trim() !== ""
+    ) {
+
+        vehicleHTML =
+            `<span class="vehicle-number">
+                ${escapeHTML(
+                    String(
+                        slot.vehicleNumber
+                    )
+                )}
+            </span>`;
+
+    }
+
+
+    return `
+
+        <tr id="row-${escapeHTML(slot.id)}">
+
+            <td>
+                <strong>
+                    ${escapeHTML(locationName)}
+                </strong>
+            </td>
+
+            <td>
+                Slot ${escapeHTML(
+                    String(
+                        slot.slotNumber || "-"
+                    )
+                )}
+            </td>
+
+            <td>
+                ${escapeHTML(
+                    String(
+                        slot.sensorId || "-"
+                    )
+                )}
+            </td>
+
+            <td>
+
+                <span class="${statusClass}">
+                    ${escapeHTML(status)}
+                </span>
+
+            </td>
+
+            <td>
+                ${escapeHTML(
+                    String(
+                        slot.statusCode ?? "-"
+                    )
+                )}
+            </td>
+
+            <td>
+                ${vehicleHTML}
+            </td>
+
+            <td>
+                ${escapeHTML(slot.id)}
+            </td>
+
+        </tr>
+
+    `;
+}
+
+
+/* =========================================================
+   FILTER SLOTS
+   ========================================================= */
+
+function filterSlots() {
+
+    displayFilteredRows();
+
+}
+
+
+/* =========================================================
+   DISPLAY FILTERED ROWS
+   ========================================================= */
+
+function displayFilteredRows() {
+
+    const searchText =
+        document.getElementById(
+            "slotSearch"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    const selectedLocation =
+        document.getElementById(
+            "locationFilter"
+        ).value;
+
+
+    const selectedStatus =
+        document.getElementById(
+            "statusFilter"
+        ).value;
+
+
+    /*
+     * Find selected location object.
+     */
+
+    const selectedLocationObject =
+        selectedLocation === "ALL"
+            ? null
+            : allLocations.find(
+                location =>
+                    String(location.id)
+                        .trim() ===
+                    String(selectedLocation)
+                        .trim()
+            );
+
+
+    const filteredSlots =
+        allSlots.filter(slot => {
+
+            /*
+             * Find actual location of this slot.
+             */
+
+            const slotLocation =
+                findLocationForSlot(slot);
+
+
+            /*
+             * LOCATION FILTER
+             */
+
+            let locationMatch =
+                true;
+
+
+            if (
+                selectedLocation !==
+                "ALL"
+            ) {
+
+                if (
+                    !selectedLocationObject ||
+                    !slotLocation
+                ) {
+
+                    locationMatch =
+                        false;
+
+                } else {
+
+                    locationMatch =
+                        String(
+                            slotLocation.id
+                        ).trim() ===
+                        String(
+                            selectedLocationObject.id
+                        ).trim();
+
+                }
+
+            }
+
+
+            /*
+             * STATUS FILTER
+             */
+
+            const status =
+                getStatusLabel(
+                    slot.statusCode,
+                    slot.status
+                );
+
+
+            const statusMatch =
+                selectedStatus ===
+                    "ALL" ||
+                status ===
+                    selectedStatus;
+
+
+            /*
+             * SEARCH FILTER
+             */
+
+            const locationName =
+                slotLocation
+                    ? slotLocation.name
+                    : getLocationName(
+                        slot.locationId
+                    );
+
+
+            const searchMatch =
+                searchText === "" ||
+
+                String(locationName)
+                    .toLowerCase()
+                    .includes(searchText) ||
+
+                String(
+                    slot.slotNumber || ""
+                )
+                .toLowerCase()
+                .includes(searchText) ||
+
+                String(
+                    slot.sensorId || ""
+                )
+                .toLowerCase()
+                .includes(searchText) ||
+
+                String(
+                    slot.vehicleNumber || ""
+                )
+                .toLowerCase()
+                .includes(searchText) ||
+
+                String(
+                    slot.id || ""
+                )
+                .toLowerCase()
+                .includes(searchText);
+
+
+            /*
+             * ALL filters must match.
+             */
+
+            return (
+                locationMatch &&
+                statusMatch &&
+                searchMatch
+            );
+
+        });
+
+
+    displaySlots(
+        filteredSlots
+    );
+}
+
+
+/* =========================================================
+   CLEAR FILTERS
+   ========================================================= */
+
+function clearFilters() {
+
+    document.getElementById(
+        "slotSearch"
+    ).value = "";
+
+
+    document.getElementById(
+        "locationFilter"
+    ).value = "ALL";
+
+
+    document.getElementById(
+        "statusFilter"
+    ).value = "ALL";
+
+
+    displayFilteredRows();
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* =========================================================
+   MANUAL REFRESH
+   ========================================================= */
+
+function manualRefresh() {
+
+    loadAdminData(true);
+
+}
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+function logoutAdmin() {
+
+    localStorage.removeItem(
+        "currentUser"
+    );
+
+    window.location.href =
+        "login.html";
+}
+
+
+/* =========================================================
+   START ADMIN DASHBOARD
+   ========================================================= */
+
+window.onload = function () {
+
+    if (!checkAdmin()) {
+        return;
+    }
+
+
+    loadAdminData(true);
+
+
+    /*
+     * Refresh every 2 seconds.
+     * Current filters remain selected.
+     */
+
+    refreshTimer =
+        setInterval(
+            function () {
+
+                loadAdminData(false);
+
+            },
+            2000
+        );
+
+};
+
+</script>
+
+</body>
+</html>

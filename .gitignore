@@ -1,15 +1,15 @@
-@'
 # Python
 venv/
+.venv/
 __pycache__/
-*.pyc
+*.py[cod]
 
-# Secrets
+# Environment and secrets
 .env
 .env.*
 secrets.js
 
-# Local/private files
+# Local/generated files
 latest_plate.jpg
 latest_plate_processed.jpg
 plate_processed.jpg
@@ -21,4 +21,4 @@ plate_capture.jpg
 # OS
 .DS_Store
 Thumbs.db
-'@ | Set-Content .gitignore
+.vercel
