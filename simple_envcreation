@@ -1,0 +1,30 @@
+'''
+git clone YOUR_GITHUB_REPOSITORY_URL
+cd SmartParking
+python -m venv venv
+.\venv\Scripts\activate
+pip install -r requirements.txt
+python plate_capture_auto.py
+
+
+
+
+
+GitHub
+   ↓
+git clone
+   ↓
+create venv
+   ↓
+pip install -r requirements.txt
+   ↓
+activate venv
+   ↓
+run project
+
+
+
+
+
+
+'''
